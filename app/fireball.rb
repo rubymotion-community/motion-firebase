@@ -1,4 +1,4 @@
-class Firehose < Firebase
+class Fireball < Firebase
 
   def self.new(url)
     alloc.initWithUrl(url)
@@ -46,9 +46,9 @@ class Firehose < Firebase
 
   def clear!(&and_then)
     if and_then
-      removeValue
-    else
       removeValueWithCompletionBlock(and_then)
+    else
+      removeValue
     end
   end
 
