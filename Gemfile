@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gem 'rake'
+# gem 'cocoapods'
+# gem 'motion-cocoapods'
+gem 'sugarcube', 'path' => '/Users/colinta/Code/rubymotion/sugarcube'
+# gem 'bubble-wrap', path: '/Users/colinta/Code/rubymotion/bubble-wrap'
+# gem 'teacup', path: '/Users/colinta/Code/rubymotion/teacup'
+# gem 'geomotion', path: '/Users/colinta/Code/rubymotion/geomotion'
+# gem 'graymatter', path: '/Users/colinta/Code/rubymotion/graymatter'
