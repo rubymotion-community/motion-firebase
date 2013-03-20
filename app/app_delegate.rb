@@ -16,7 +16,6 @@ class MyController < UIViewController
 
   attr_accessor :chat
   attr_accessor :fireball
-  attr_accessor :name
 
   attr_accessor :nameField
   attr_accessor :textField
@@ -58,8 +57,8 @@ class MyController < UIViewController
     self.fireball = Fireball.alloc.initWithUrl(FirechatNS)
 
     # Pick a random number between 1-1000 for our username.
-    self.name = "Guest0x#{(rand * 1000).round.to_s(16)}"
-    nameField.setTitle(self.name, forState:UIControlStateNormal)
+    self.title = "Guest0x#{(rand * 1000).round.to_s(16)}"
+    nameField.setTitle(self.title, forState:UIControlStateNormal)
 
     self.fireball.observeEventType(FEventTypeChildAdded, withBlock:->(snapshot) {
         # Add the chat message to the array.
@@ -77,7 +76,7 @@ class MyController < UIViewController
 
     # This will also add the message to our local array self.chat because
     # the FEventTypeChildAdded event will be immediately fired.
-    self.fireball.childByAutoId.setValue({'name' => self.name, 'text' => text_field.text})
+    self.fireball.childByAutoId.setValue({'name' => self.title, 'text' => text_field.text})
 
     text_field.text = ''
     false
