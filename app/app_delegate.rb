@@ -58,7 +58,7 @@ class MyController < UIViewController
     self.fireball = Fireball.alloc.initWithUrl(FirechatNS)
 
     # Pick a random number between 1-1000 for our username.
-    self.name = "Guest#{(rand * 1000).round}"
+    self.name = "Guest0x#{(rand * 1000).round.to_s(16)}"
     nameField.setTitle(self.name, forState:UIControlStateNormal)
 
     self.fireball.observeEventType(FEventTypeChildAdded, withBlock:->(snapshot) {
