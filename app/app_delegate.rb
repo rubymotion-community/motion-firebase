@@ -60,12 +60,12 @@ class MyController < UIViewController
     self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
     nameField.setTitle(self.title, forState:UIControlStateNormal)
 
-    self.fireball.observeEventType(FEventTypeChildAdded, withBlock:->(snapshot) {
-        # Add the chat message to the array.
-        self.chat << snapshot.value
-        # Reload the table view so the new message will show up.
-        self.tableView.reloadData
-    })
+    self.fireball.on(:added) { |snapshot|
+      # Add the chat message to the array.
+      self.chat << snapshot.value
+      # Reload the table view so the new message will show up.
+      self.tableView.reloadData
+    }
   end
 
 
@@ -76,7 +76,7 @@ class MyController < UIViewController
 
     # This will also add the message to our local array self.chat because
     # the FEventTypeChildAdded event will be immediately fired.
-    self.fireball.childByAutoId.setValue({'name' => self.title, 'text' => text_field.text})
+    self.fireball[].setValue({'name' => self.title, 'text' => text_field.text})
 
     text_field.text = ''
     false
