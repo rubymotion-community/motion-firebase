@@ -15,10 +15,11 @@ class Fireball < Firebase
   #     fireball = Fireball.new('http://..../')
   #     fireball.auth('secretkey', then: ->{}, disconnect:{})
   #     # => firebase.authWithCredential(credential)
-  def auth(credential, options={}, &handler)
-    handler = handler || options[:completion]
+  def auth(credential, options={}, &and_then)
+    and_then = and_then || options[:completion]
     disconnect_block = options[:disconnect]
-    authWithCredential(credential, withCompletionBlock:handler, withCancelBlock:disconnect_block)
+    authWithCredential(credential, withCompletionBlock:and_then, withCancelBlock:disconnect_block)
+    return self
   end
 
   def run(options={}, &transaction)
@@ -52,32 +53,25 @@ class Fireball < Firebase
     end
   end
 
+  def []=(key, value)
+    update(key => value)
+  end
+
   def clear!(&and_then)
     if and_then
       removeValueWithCompletionBlock(and_then)
     else
       removeValue
     end
+    return self
   end
 
   def <<(value)
     setValue(value)
   end
 
-  def priority(value, &and_then)
-    if and_then
-      setPriority(value, withCompletionBlock:and_then)
-    else
-      setPriority(value)
-    end
-  end
-
-  def value(value, priority:priority, &and_then)
-    if and_then
-      setValue(value, andPriority:priority, withCompletionBlock:and_then)
-    else
-      setValue(value, andPriority:priority)
-    end
+  def value=(value)
+    value(value)
   end
 
   def value(value, &and_then)
@@ -86,52 +80,84 @@ class Fireball < Firebase
     else
       setValue(value)
     end
+    return self
   end
 
-  def on(event_type, options={}, &handler)
-    handler = handler || options[:completion]
-    raise "event handler is required" unless handler
-    raise "event handler must accept one or two arguments" unless handler.arity == 1 || handler.arity == 2
+  def priority=(value)
+    priority(value)
+  end
+
+  def priority(value, &and_then)
+    if and_then
+      setPriority(value, withCompletionBlock:and_then)
+    else
+      setPriority(value)
+    end
+    return self
+  end
+
+  def value(value, priority:priority, &and_then)
+    if and_then
+      setValue(value, andPriority:priority, withCompletionBlock:and_then)
+    else
+      setValue(value, andPriority:priority)
+    end
+    return self
+  end
+
+  def update(values, &and_then)
+    if and_then
+      updateChildValues(values, withCompletionBlock:and_then)
+    else
+      updateChildValues(values)
+    end
+    return self
+  end
+
+  def on(event_type, options={}, &and_then)
+    and_then = and_then || options[:completion]
+    raise "event handler is required" unless and_then
+    raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
 
     event_type = _convert_event_type(event_type)
     disconnect_block = options[:disconnect]
     raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
-    if handler.arity == 1
+    if and_then.arity == 1
       if disconnect_block
-        observeEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:disconnect_block)
+        observeEventType(FEventTypeChildAdded, withBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeEventType(FEventTypeChildAdded, withBlock:handler)
+        observeEventType(FEventTypeChildAdded, withBlock:and_then)
       end
     else
       if disconnect_block
-        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:disconnect_block)
+        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler)
+        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then)
       end
     end
   end
 
-  def once(event_type, options={}, &handler)
-    handler = handler || options[:completion]
-    raise "event handler is required" unless handler
-    raise "event handler must accept one or two arguments" unless handler.arity == 1 || handler.arity == 2
+  def once(event_type, options={}, &and_then)
+    and_then = and_then || options[:completion]
+    raise "event handler is required" unless and_then
+    raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
 
     event_type = _convert_event_type(event_type)
     disconnect_block = options[:disconnect]
     raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
-    if handler.arity == 1
+    if and_then.arity == 1
       if disconnect_block
-        observeSingleEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:disconnect_block)
+        observeSingleEventType(FEventTypeChildAdded, withBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeSingleEventType(FEventTypeChildAdded, withBlock:handler)
+        observeSingleEventType(FEventTypeChildAdded, withBlock:and_then)
       end
     else
       if disconnect_block
-        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:disconnect_block)
+        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler)
+        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then)
       end
     end
   end
@@ -142,27 +168,29 @@ class Fireball < Firebase
     else
       removeAllObservers
     end
+    return self
   end
 
-  def cancel_disconnect(&handler)
-    if handler
-      cancelDisconnectOperationsWithCompletionBlock(handler)
+  def cancel_disconnect(&and_then)
+    if and_then
+      cancelDisconnectOperationsWithCompletionBlock(and_then)
     else
       cancelDisconnectOperations
     end
+    return self
   end
 
-  def on_disconnect(value, &handler)
-    if handler
+  def on_disconnect(value, &and_then)
+    if and_then
       if value.nil?
-        onDisconnectRemoveValueWithCompletionBlock(handler)
+        onDisconnectRemoveValueWithCompletionBlock(and_then)
       elsif NSDictionary === value
-        onDisconnectUpdateChildValues(value, withCompletionBlock:handler)
+        onDisconnectUpdateChildValues(value, withCompletionBlock:and_then)
       else
-        onDisconnectSetValue(value, withCompletionBlock:handler)
+        onDisconnectSetValue(value, withCompletionBlock:and_then)
       end
     else
-      if value.nil?
+      if value == :remove
         onDisconnectRemoveValue
       elsif NSDictionary === value
         onDisconnectUpdateChildValues(value)
@@ -170,14 +198,16 @@ class Fireball < Firebase
         onDisconnectSetValue(value)
       end
     end
+    return self
   end
 
-  def on_disconnect(value, priority:priority, &handler)
-    if handler
-      onDisconnectSetValue(value, andPriority:priority, withCompletionBlock:handler)
+  def on_disconnect(value, priority:priority, &and_then)
+    if and_then
+      onDisconnectSetValue(value, andPriority:priority, withCompletionBlock:and_then)
     else
       onDisconnectSetValue(value, andPriority:priority)
     end
+    return self
   end
 
 private
