@@ -4,12 +4,13 @@ require File.expand_path('../lib/fireball/version.rb', __FILE__)
 Gem::Specification.new do |gem|
   gem.name          = 'fireball'
   gem.version       = Fireball::Version
+  gem.summary       = 'A RubyMotion wrapper for the Firebase iOS SDK'
 
   gem.authors = ['Colin T.A. Gray']
   gem.email   = ['colinta@gmail.com']
   gem.summary     = %{}
   gem.description = <<-DESC
-It's a RubyMotion wrapper for the Firebase iOS SDK
+A RubyMotion wrapper for the Firebase iOS SDK
 DESC
 
   gem.homepage    = 'https://github.com/colinta/fireball'
