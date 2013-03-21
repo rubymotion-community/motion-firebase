@@ -4,19 +4,26 @@ class Fireball < Firebase
     alloc.initWithUrl(url)
   end
 
+  # @example
+  #     Fireball.dispatch_queue(queue)
+  #     # => Firebase.setDispatchQueue(queue)
   def self.dispatch_queue=(queue)
     setDispatchQueue(queue)
   end
 
+  # @example
+  #     fireball = Fireball.new('http://..../')
+  #     fireball.auth('secretkey', then: ->{}, disconnect:{})
+  #     # => firebase.authWithCredential(credential)
   def auth(credential, options={}, &handler)
-    handler = handler || options[:then]
-    or_block = options[:or]
-    authWithCredential(credential, withCompletionBlock:handler, withCancelBlock:or_block)
+    handler = handler || options[:completion]
+    disconnect_block = options[:disconnect]
+    authWithCredential(credential, withCompletionBlock:handler, withCancelBlock:disconnect_block)
   end
 
   def run(options={}, &transaction)
     transaction = transaction || options[:transaction]
-    completion_block = options[:then]
+    completion_block = options[:completion]
     with_local_events = options[:local]
     if with_local_events.nil?
       if completion_block
@@ -30,11 +37,12 @@ class Fireball < Firebase
   end
 
   # @example
-  #     firehose[]  # => childByAutoId
-  #     firehose['fred']  # => childByAppendingPath('fred')
-  #     firehose['fred', 'name', 'first']  # => childByAppendingPath('fred/name/first')
-  #     firehose['fred']['name']['first']
-  #     # childByAppendingPath('fred').childByAppendingPath('name').childByAppendingPath('first'),
+  #     fireball = Fireball.new('http://..../')
+  #     fireball[]  # => childByAutoId
+  #     fireball['fred']  # => childByAppendingPath('fred')
+  #     fireball['fred', 'name', 'first']  # => childByAppendingPath('fred/name/first')
+  #     fireball['fred']['name']['first']
+  #     # => childByAppendingPath('fred').childByAppendingPath('name').childByAppendingPath('first'),
   #     # same as => childByAppendingPath('fred/name/first')
   def [](*names)
     if names.length == 0
@@ -81,23 +89,23 @@ class Fireball < Firebase
   end
 
   def on(event_type, options={}, &handler)
-    handler = handler || options[:then]
+    handler = handler || options[:completion]
     raise "event handler is required" unless handler
     raise "event handler must accept one or two arguments" unless handler.arity == 1 || handler.arity == 2
 
     event_type = _convert_event_type(event_type)
-    or_block = options[:or]
-    raise ":or handler must not accept any arguments" if or_block && or_block.arity > 0
+    disconnect_block = options[:disconnect]
+    raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
     if handler.arity == 1
-      if or_block
-        observeEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:or_block)
+      if disconnect_block
+        observeEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:disconnect_block)
       else
         observeEventType(FEventTypeChildAdded, withBlock:handler)
       end
     else
-      if or_block
-        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:or_block)
+      if disconnect_block
+        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:disconnect_block)
       else
         observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler)
       end
@@ -105,23 +113,23 @@ class Fireball < Firebase
   end
 
   def once(event_type, options={}, &handler)
-    handler = handler || options[:then]
+    handler = handler || options[:completion]
     raise "event handler is required" unless handler
     raise "event handler must accept one or two arguments" unless handler.arity == 1 || handler.arity == 2
 
     event_type = _convert_event_type(event_type)
-    or_block = options[:or]
-    raise ":or handler must not accept any arguments" if or_block && or_block.arity > 0
+    disconnect_block = options[:disconnect]
+    raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
     if handler.arity == 1
-      if or_block
-        observeSingleEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:or_block)
+      if disconnect_block
+        observeSingleEventType(FEventTypeChildAdded, withBlock:handler, withCancelBlock:disconnect_block)
       else
         observeSingleEventType(FEventTypeChildAdded, withBlock:handler)
       end
     else
-      if or_block
-        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:or_block)
+      if disconnect_block
+        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler, withCancelBlock:disconnect_block)
       else
         observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:handler)
       end
