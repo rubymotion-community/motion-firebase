@@ -22,6 +22,10 @@ class Fireball < Firebase
     return self
   end
 
+  def auth_state
+    self.root[".info/authenticated"]
+  end
+
   def run(options={}, &transaction)
     transaction = transaction || options[:transaction]
     completion_block = options[:completion]
@@ -49,12 +53,12 @@ class Fireball < Firebase
     if names.length == 0
       childByAutoId
     else
-      childByAppendingPath(name.join('/'))
+      childByAppendingPath(names.join('/'))
     end
   end
 
   def []=(key, value)
-    update(key => value)
+    childByAppendingPath(key).set(value)
   end
 
   def clear!(&and_then)
@@ -67,14 +71,16 @@ class Fireball < Firebase
   end
 
   def <<(value)
-    setValue(value)
+    ref = childByAutoId
+    ref.update(value)
+    return ref
   end
 
   def value=(value)
-    value(value)
+    setValue(value)
   end
 
-  def value(value, &and_then)
+  def set(value, &and_then)
     if and_then
       setValue(value, withCompletionBlock:and_then)
     else
@@ -96,7 +102,7 @@ class Fireball < Firebase
     return self
   end
 
-  def value(value, priority:priority, &and_then)
+  def set(value, priority:priority, &and_then)
     if and_then
       setValue(value, andPriority:priority, withCompletionBlock:and_then)
     else
@@ -119,21 +125,21 @@ class Fireball < Firebase
     raise "event handler is required" unless and_then
     raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
 
-    event_type = _convert_event_type(event_type)
+    event_type = Fireball._convert_event_type(event_type)
     disconnect_block = options[:disconnect]
     raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
     if and_then.arity == 1
       if disconnect_block
-        observeEventType(FEventTypeChildAdded, withBlock:and_then, withCancelBlock:disconnect_block)
+        observeEventType(event_type, withBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeEventType(FEventTypeChildAdded, withBlock:and_then)
+        observeEventType(event_type, withBlock:and_then)
       end
     else
       if disconnect_block
-        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
+        observeEventType(event_type, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then)
+        observeEventType(event_type, andPreviousSiblingNameWithBlock:and_then)
       end
     end
   end
@@ -143,21 +149,21 @@ class Fireball < Firebase
     raise "event handler is required" unless and_then
     raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
 
-    event_type = _convert_event_type(event_type)
+    event_type = Fireball._convert_event_type(event_type)
     disconnect_block = options[:disconnect]
     raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
 
     if and_then.arity == 1
       if disconnect_block
-        observeSingleEventType(FEventTypeChildAdded, withBlock:and_then, withCancelBlock:disconnect_block)
+        observeSingleEventOfType(event_type, withBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeSingleEventType(FEventTypeChildAdded, withBlock:and_then)
+        observeSingleEventOfType(event_type, withBlock:and_then)
       end
     else
       if disconnect_block
-        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
+        observeSingleEventOfType(event_type, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
       else
-        observeSingleEventType(FEventTypeChildAdded, andPreviousSiblingNameWithBlock:and_then)
+        observeSingleEventOfType(event_type, andPreviousSiblingNameWithBlock:and_then)
       end
     end
   end
@@ -210,8 +216,12 @@ class Fireball < Firebase
     return self
   end
 
+  def inspect
+    "#<#{self.class}:0x#{self.object_id.to_s(16)}>"
+  end
+
 private
-  def _convert_event_type(event_type)
+  def self._convert_event_type(event_type)
     case event_type
     when :child_added, :added
       return FEventTypeChildAdded
@@ -223,6 +233,8 @@ private
       return FEventTypeChildRemoved
     when :value
       return FEventTypeValue
+    else
+      NSLog("Unknown event type #{event_type.inspect}")
     end
     return event_type
   end

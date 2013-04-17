@@ -36,22 +36,33 @@ write data (ie. `[key]=`), and to create new Fireball references (ie. `[]`).
 ##### Getting references to children locations
 
     fireball[path]
-    fireball[]
+    fireball[]  # childByAutoId
+    fireball['fred']  # childByAppendingPath('fred')
 
 ##### Writing data
 
-    fireball << value
+    fireball << {'key': 'value'}
+    # => fireball.childByAutoId.updateChildValues(values), returns the new child
+
+    # set value
     fireball.value = value
-    fireball.value(value)
-    fireball.value(value) { 'completion block' }
-    fireball.value(value, priority: priority)
-    fireball.value(value, priority: priority) { 'completion block' }
+    fireball.set(value)
+    fireball.set(value) { 'completion block' }
+    fireball.set(value, priority: priority)
+    fireball.set(value, priority: priority) { 'completion block' }
+
+    # set value of child node
+    fireball['first_name'] = 'fred'  # childByAppendingPath('fred').set('fred')
+
+    # remove value
     fireball.clear!
     fireball.clear! { 'completion block' }
+
+    # priority
     fireball.priority = priority
     fireball.priority(priority)
     fireball.priority(priority) { |error| 'completion block' }
-    fireball['first_name'] = 'fred'
+
     fireball.update(values)
     fireball.update(values) { |error| 'completion block' }
 
