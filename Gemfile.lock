@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fireball (1.0.1)
+    motion-firebase (1.0.5)
 
 GEM
   remote: https://rubygems.org/
@@ -22,7 +22,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  fireball!
+  motion-firebase!
   rake
   rspec
   sugarcube

@@ -15,7 +15,7 @@ FirechatNS = 'https://firechat-ios.firebaseio-demo.com/'
 class MyController < UIViewController
 
   attr_accessor :chat
-  attr_accessor :fireball
+  attr_accessor :firebase
 
   attr_accessor :nameField
   attr_accessor :textField
@@ -54,13 +54,13 @@ class MyController < UIViewController
     self.chat = []
 
     # Initialize the root of our Firebase namespace.
-    self.fireball = Fireball.alloc.initWithUrl(FirechatNS)
+    self.firebase = Firebase.alloc.initWithUrl(FirechatNS)
 
     # Pick a random number between 1-1000 for our username.
     self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
     nameField.setTitle(self.title, forState:UIControlStateNormal)
 
-    self.fireball.on(:added) { |snapshot|
+    self.firebase.on(:added) { |snapshot|
       # Add the chat message to the array.
       self.chat << snapshot.value
       # Reload the table view so the new message will show up.
@@ -76,7 +76,7 @@ class MyController < UIViewController
 
     # This will also add the message to our local array self.chat because
     # the FEventTypeChildAdded event will be immediately fired.
-    self.fireball[].setValue({'name' => self.title, 'text' => text_field.text})
+    self.firebase[].setValue({'name' => self.title, 'text' => text_field.text})
 
     text_field.text = ''
     false

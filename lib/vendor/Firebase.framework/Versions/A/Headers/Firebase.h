@@ -48,7 +48,7 @@
 /** @name Initializing a Firebase object */
 
 /**
- * Initialize this Firebase reference with an absolute URL. 
+ * Initialize this Firebase reference with an absolute URL.
  *
  * @param url The Firebase URL (ie: https://SampleChat.firebaseIO-demo.com)
  */
@@ -58,7 +58,7 @@
 
 /**
  * Get a Firebase reference for the location at the specified relative path.
- * The relative path can either be a simple child name (e.g. 'fred') or a 
+ * The relative path can either be a simple child name (e.g. 'fred') or a
  * deeper slash-separated path (e.g. 'fred/name/first').
  *
  * @param pathString A relative path from this location to the desired child location.
@@ -83,8 +83,8 @@
 /** @name Writing data */
 
 /**
- * Write data to this Firebase location. This will overwrite any data 
- * at this location and all child locations. 
+ * Write data to this Firebase location. This will overwrite any data
+ * at this location and all child locations.
  *
  * Data types that can be set are:
  * * NSString -- @"Hello World"
@@ -93,7 +93,7 @@
  * * NSArray
  *
  * The effect of the write will be visible immediately and the corresponding
- * events will be triggered. Synchronization of the data to the Firebase 
+ * events will be triggered. Synchronization of the data to the Firebase
  * servers will also be started.
  *
  * Passing null for the new value is equivalent to calling remove:;
@@ -140,9 +140,9 @@
 
 /**
  * Remove the data at this Firebase location. Any data at child locations will also be deleted.
- * 
+ *
  * The effect of the delete will be visible immediately and the corresponding events
- * will be triggered. Synchronization of the delete to the Firebase servers will 
+ * will be triggered. Synchronization of the delete to the Firebase servers will
  * also be started.
  *
  * remove: is equivalent to calling setValue:nil
@@ -170,11 +170,11 @@
  * Children are sorted based on this priority using the following rules:
  *
  * Children with no priority (a null priority) come first. They are ordered lexicographically by name.
- * Children with a priority that is parsable as a number come next. They are 
+ * Children with a priority that is parsable as a number come next. They are
  * sorted numerically by priority first (small to large) and lexicographically by name second (A to z).
- * Children with non-numeric priorities come last. They are sorted lexicographically 
+ * Children with non-numeric priorities come last. They are sorted lexicographically
  * by priority first and lexicographically by name second.
- * Setting the priority to null removes any existing priority. 
+ * Setting the priority to null removes any existing priority.
  * Note that priorities are parsed and ordered as IEEE 754 double-precision floating-point numbers.
  *
  * @param priority The priority to set at the specified location.
@@ -200,7 +200,7 @@
 - (void) updateChildValues:(NSDictionary *)values;
 
 /**
- * The same as update: with a block block that is called once the update has been committed to the 
+ * The same as update: with a block block that is called once the update has been committed to the
  * Firebase servers
  *
  * @param value A dictionary of the keys to change and their new values
@@ -321,7 +321,7 @@
 /** @name Detaching observers */
 
 /**
- * Detach a block previously attached with observeEventType:withBlock:. 
+ * Detach a block previously attached with observeEventType:withBlock:.
  *
  * @param handle The handle returned by the call to observeEventType:withBlock: which we are trying to remove.
  */
@@ -376,7 +376,7 @@
  *
  * @param endPriority The upper bound, inclusive, for the priority of data visible to the returned FQuery
  * @param childName The upper bound, inclusive, for the name of nodes with priority equal to endPriority
- * @return An FQuery instance, limited to data with priority less than endPriority or equal to endPriority and with a name less than or equal to childName 
+ * @return An FQuery instance, limited to data with priority less than endPriority or equal to endPriority and with a name less than or equal to childName
  */
 - (FQuery *) queryEndingAtPriority:(id)endPriority andChildName:(NSString *)childName;
 
@@ -387,7 +387,7 @@
  * The FQuery instance returned by queryLimitedToNumberOfChildren: will respond to events at from at most limit child nodes
  *
  * @param limit The upper bound, inclusive, for the number of child nodes to receive events for
- * @return An FQuery instance, limited to at most limit child nodes. 
+ * @return An FQuery instance, limited to at most limit child nodes.
  */
 - (FQuery *) queryLimitedToNumberOfChildren:(NSUInteger)limit;
 
@@ -493,7 +493,7 @@
 
 /**
  * Cancel any operations that are set to run on disconnect. If you previously called onDisconnectSetValue:,
- * onDisconnectRemoveValue:, or onDisconnectUpdateChildValues:, and no longer want the values updated when the 
+ * onDisconnectRemoveValue:, or onDisconnectUpdateChildValues:, and no longer want the values updated when the
  * connection is lost, call cancelDisconnectOperations:
  */
 - (void) cancelDisconnectOperations;
@@ -584,7 +584,7 @@
 /** @name Retrieving String Representation */
 
 /**
- * Gets the absolute URL of this Firebase location. 
+ * Gets the absolute URL of this Firebase location.
  *
  * @return The absolute URL of the referenced Firebase location.
  */
