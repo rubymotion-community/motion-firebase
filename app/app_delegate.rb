@@ -54,7 +54,7 @@ class MyController < UIViewController
     self.chat = []
 
     # Initialize the root of our Firebase namespace.
-    self.firebase = Firebase.alloc.initWithUrl(FirechatNS)
+    self.firebase = Firebase.new(FirechatNS)
 
     # Pick a random number between 1-1000 for our username.
     self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
@@ -76,7 +76,7 @@ class MyController < UIViewController
 
     # This will also add the message to our local array self.chat because
     # the FEventTypeChildAdded event will be immediately fired.
-    self.firebase[].setValue({'name' => self.title, 'text' => text_field.text})
+    self.firebase << {'name' => self.title, 'text' => text_field.text}
 
     text_field.text = ''
     false
