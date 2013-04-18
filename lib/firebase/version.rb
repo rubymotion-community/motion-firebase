@@ -1,5 +1,5 @@
 module Motion
   module Firebase
-    Version = '1.0.5'
+    Version = '1.0.6'
   end
 end

@@ -1,5 +1,23 @@
 class Firebase
 
+  def self.convert_event_type(event_type)
+    case event_type
+    when :child_added, :added
+      return FEventTypeChildAdded
+    when :child_moved, :moved
+      FEventTypeChildMoved
+    when :child_changed, :changed
+      return FEventTypeChildChanged
+    when :child_removed, :removed
+      return FEventTypeChildRemoved
+    when :value
+      return FEventTypeValue
+    else
+      NSLog("Unknown event type #{event_type.inspect}")
+    end
+    return event_type
+  end
+
   def self.new(url)
     alloc.initWithUrl(url)
   end
@@ -120,63 +138,6 @@ class Firebase
     return self
   end
 
-  def on(event_type, options={}, &and_then)
-    and_then = and_then || options[:completion]
-    raise "event handler is required" unless and_then
-    raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
-
-    event_type = Firebase._convert_event_type(event_type)
-    disconnect_block = options[:disconnect]
-    raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
-
-    if and_then.arity == 1
-      if disconnect_block
-        observeEventType(event_type, withBlock:and_then, withCancelBlock:disconnect_block)
-      else
-        observeEventType(event_type, withBlock:and_then)
-      end
-    else
-      if disconnect_block
-        observeEventType(event_type, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
-      else
-        observeEventType(event_type, andPreviousSiblingNameWithBlock:and_then)
-      end
-    end
-  end
-
-  def once(event_type, options={}, &and_then)
-    and_then = and_then || options[:completion]
-    raise "event handler is required" unless and_then
-    raise "event handler must accept one or two arguments" unless and_then.arity == 1 || and_then.arity == 2
-
-    event_type = Firebase._convert_event_type(event_type)
-    disconnect_block = options[:disconnect]
-    raise ":disconnect handler must not accept any arguments" if disconnect_block && disconnect_block.arity > 0
-
-    if and_then.arity == 1
-      if disconnect_block
-        observeSingleEventOfType(event_type, withBlock:and_then, withCancelBlock:disconnect_block)
-      else
-        observeSingleEventOfType(event_type, withBlock:and_then)
-      end
-    else
-      if disconnect_block
-        observeSingleEventOfType(event_type, andPreviousSiblingNameWithBlock:and_then, withCancelBlock:disconnect_block)
-      else
-        observeSingleEventOfType(event_type, andPreviousSiblingNameWithBlock:and_then)
-      end
-    end
-  end
-
-  def off(handle=nil)
-    if handle
-      removeObserverWithHandle(handle)
-    else
-      removeAllObservers
-    end
-    return self
-  end
-
   def cancel_disconnect(&and_then)
     if and_then
       cancelDisconnectOperationsWithCompletionBlock(and_then)
@@ -218,25 +179,6 @@ class Firebase
 
   def inspect
     "#<#{self.class}:0x#{self.object_id.to_s(16)}>"
-  end
-
-private
-  def self._convert_event_type(event_type)
-    case event_type
-    when :child_added, :added
-      return FEventTypeChildAdded
-    when :child_moved, :moved
-      FEventTypeChildMoved
-    when :child_changed, :changed
-      return FEventTypeChildChanged
-    when :child_removed, :removed
-      return FEventTypeChildRemoved
-    when :value
-      return FEventTypeValue
-    else
-      NSLog("Unknown event type #{event_type.inspect}")
-    end
-    return event_type
   end
 
 end
