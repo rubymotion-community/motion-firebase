@@ -42,6 +42,22 @@ class FirebaseAuthClient
     changePasswordForEmail(email, oldPassword:old_password, newPassword:new_password, completionBlock:block)
   end
 
+  def login_facebook(credentials, &block)
+    app_id = credentials[:app_id]
+    raise "app_id is required in #{__method__}" unless app_id
+    permissions = credentials[:permissions]
+    raise "permissions is required in #{__method__}" unless permissions
+    loginToFacebookAppWithId(app_id, permissions:permissions, withCompletionBlock:block)
+  end
+
+  def login_to_twitter(credentials, &block)
+    app_id = credentials[:app_id]
+    raise "app_id is required in #{__method__}" unless app_id
+    on_multiple = credentials[:on_multiple]
+    raise "on_multiple is required in #{__method__}" unless on_multiple
+    loginToTwitterAppWithId(app_id, multipleAccountsHandler:on_multiple, withCompletionBlock:block)
+  end
+
   def inspect
     "#<#{self.class}:0x#{self.object_id.to_s(16)}>"
   end
