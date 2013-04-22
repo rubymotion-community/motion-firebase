@@ -105,6 +105,14 @@ SDK
       disconnect: proc { |error| 'completion block', },
       )
     firebase.unauth
+    # when using FirebaseAuthClient to authenticate, this child node should be
+    # monitored for changes
+    firebase.auth_state
+    # usually you'll want to monitor its value, so this is a helper for that:
+    handle = firebase.on_auth do |snapshot|
+    end
+    # be a good citizen and turn off the listener later!
+    firebase.off(handle)
 
 ##### Transactions
 
@@ -166,7 +174,7 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 
 `credentials` should include `:app_id` and `:permissions`
 
-    auth.login_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
+    auth.login_to_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
 
 ##### Twitter authentication methdos
 

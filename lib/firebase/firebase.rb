@@ -147,6 +147,10 @@ class Firebase
     return self
   end
 
+  def on_auth(options={}, &block)
+    auth_state.on(:value, options, &block)
+  end
+
   def on_disconnect(value, &and_then)
     if and_then
       if value.nil?
