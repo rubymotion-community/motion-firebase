@@ -1,0 +1,18 @@
+PATH
+  remote: ..
+  specs:
+    motion-firebase (1.0.9)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.0.3)
+    sugarcube (0.20.20)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  motion-firebase!
+  rake
+  sugarcube

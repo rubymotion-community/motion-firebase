@@ -14,7 +14,7 @@ DESC
 
   gem.homepage    = 'https://github.com/colinta/motion-firebase'
 
-  gem.files        = `git ls-files`.split($\)
+  gem.files        = Dir.glob('lib/**/*') + ['README.md', 'motion-firebase.gemspec']
   gem.test_files   = gem.files.grep(%r{^spec/})
 
   gem.require_paths = ['lib']
