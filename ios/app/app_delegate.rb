@@ -1,3 +1,5 @@
+FirechatNS = 'https://firechat-ios.firebaseio-demo.com/'
+
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     true
@@ -9,8 +11,6 @@ class AppDelegate
   end
 end
 
-
-FirechatNS = 'https://firechat-ios.firebaseio-demo.com/'
 
 class MyController < UIViewController
 
@@ -26,9 +26,6 @@ class MyController < UIViewController
 
     self.nameField = UIButton.rounded
     self.nameField.frame = [[20, 20], [280, 44]]
-    self.nameField.on :touch {
-      #
-    }
     self.nameField.autoresizingMask = UIViewAutoresizingFlexibleWidth
     self.view << self.nameField
 
@@ -60,12 +57,12 @@ class MyController < UIViewController
     self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
     nameField.setTitle(self.title, forState:UIControlStateNormal)
 
-    self.firebase.on(:added) { |snapshot|
+    self.firebase.on(:added) do |snapshot|
       # Add the chat message to the array.
       self.chat << snapshot.value
       # Reload the table view so the new message will show up.
       self.tableView.reloadData
-    }
+    end
   end
 
 
@@ -137,11 +134,11 @@ class MyController < UIViewController
     animationDuration = userInfo[UIKeyboardAnimationDurationUserInfoKey]
 
     # Get the correct keyboard size to we slide the right amount.
-    UIView.animate(duration:animationDuration, options:animationCurve | UIViewAnimationOptionBeginFromCurrentState) {
+    UIView.animate(duration:animationDuration, options:animationCurve | UIViewAnimationOptionBeginFromCurrentState) do
       keyboardFrame = self.view.convertRect(keyboardEndFrame, toView:nil)
       y = keyboardFrame.size.height * (up ? -1 : 1)
       self.view.frame = CGRectOffset(self.view.frame, 0, y)
-    }
+    end
   end
 
   # This method will be called when the user touches on the tableView, at
