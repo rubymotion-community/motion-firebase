@@ -1,4 +1,4 @@
-class FirebaseAuthClient
+class FirebaseSimpleLogin
 
   def self.new(ref)
     alloc.initWithRef(ref)

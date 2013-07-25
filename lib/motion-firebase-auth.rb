@@ -13,7 +13,10 @@ Motion::Project::App.setup do |app|
     app.files.insert(insert_point, file)
   end
 
-  app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/FirebaseAuthClient.framework'), :static, headers_dir: 'Headers', products: ['FirebaseAuthClient'])
+  app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/FirebaseSimpleLogin.framework'), :static, headers_dir: 'Headers', products: ['FirebaseSimpleLogin'])
   app.libs += ['/usr/lib/libsqlite3.dylib']
-  app.weak_frameworks += ['AdSupport', 'Accounts', 'Social']
+  app.weak_frameworks += ['Accounts', 'Social']
+  app.entitlements['keychain-access-groups'] ||= [
+    app.seed_id + '.' + app.identifier
+  ]
 end

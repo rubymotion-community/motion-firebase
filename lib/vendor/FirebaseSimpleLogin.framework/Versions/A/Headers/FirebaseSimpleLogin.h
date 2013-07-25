@@ -31,16 +31,16 @@
 
 #import "FAUser.h"
 
-@interface FirebaseAuthClient : NSObject
+@interface FirebaseSimpleLogin : NSObject
 
-/** @name Initializing a FirebaseAuthClient instance */
+/** @name Initializing a FirebaseSimpleLogin instance */
 
 
 /**
  * You must initialize the auth client with a Firebase reference. The auth client will use that reference to authenticate to the Firebase servers
  *
  * @param ref A valid Firebase reference
- * @return An initialized instance of FirebaseAuthClient
+ * @return An initialized instance of FirebaseSimpleLogin
  */
 - (id) initWithRef:(Firebase *)ref;
 
@@ -122,6 +122,7 @@
  */
 - (void) loginToFacebookAppWithId:(NSString *)appId permissions:(NSArray *)permissions audience:(NSString *)audience withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
+- (void) createFacebookUserWithToken:(NSString *)token appId:(NSString *)appId withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
 /** @name Twitter authentication methdos */
 
@@ -142,7 +143,7 @@
 /** @name Global configuration and settings */
 
 /**
- * @return The FirebaseAuthClient SDK version
+ * @return The FirebaseSimpleLogin SDK version
  */
 + (NSString *) sdkVersion;
 
