@@ -32,14 +32,14 @@
  * An FMutableData instance is populated with data from a Firebase location. 
  * When you are using runTransactionBlock:, you will be given an instance containing the current
  * data at that location. Your block will be responsible for updating that instance to the data
- * you wish to save at that location, and then returning [FTransactionResult successWithData:yourData].
+ * you wish to save at that location, and then returning using [FTransactionResult successWithValue:].
  *
  * To modify the data, set its value property to any of the native types support by Firebase:
  * * NSNumber (includes BOOL)
  * * NSDictionary
  * * NSArray
  * * NSString
- * * nil / [NSNull null] to remove the data
+ * * nil / NSNull to remove the data
  *
  * Note that changes made to a child FMutableData instance will be visible to the parent.
  */
@@ -50,12 +50,17 @@
 
 
 /**
+ * Returns boolean indicating whether this mutable data has children.
+ *
  * @return YES if this data contains child nodes.
  */
 - (BOOL) hasChildren;
 
 
 /**
+ * Indicates whether this mutable data has a child at the given path.
+ *
+ * @param path A path string, consisting either of a single segment, like 'child', or multiple segments, 'a/deeper/child'
  * @return YES if this data contains a child at the specified relative path
  */
 - (BOOL) hasChildAtPath:(NSString *)path;
@@ -86,7 +91,7 @@
  * * NSDictionary
  * * NSArray
  * * NSString
- * * nil / [NSNull null] to remove the data
+ * * nil / NSNull to remove the data
  *
  * Note that setting the value will override the priority at this location.
  *
@@ -99,7 +104,7 @@
  * Set this property to update the priority of the data at this location. Can be set to the following types:
  * * NSNumber
  * * NSString
- * * nil / [NSNull null] to remove the priority
+ * * nil / NSNull to remove the priority
  *
  * @return The priority of the data at this location
  */

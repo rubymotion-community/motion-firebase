@@ -33,6 +33,7 @@
 #import "FMutableData.h"
 #import "FTransactionResult.h"
 
+
 /**
  * A Firebase reference represents a particular location in your Firebase
  * and can be used for reading or writing data to that Firebase location.
@@ -48,7 +49,7 @@
 /** @name Initializing a Firebase object */
 
 /**
- * Initialize this Firebase reference with an absolute URL.
+ * Initialize this Firebase reference with an absolute URL. 
  *
  * @param url The Firebase URL (ie: https://SampleChat.firebaseIO-demo.com)
  */
@@ -58,7 +59,7 @@
 
 /**
  * Get a Firebase reference for the location at the specified relative path.
- * The relative path can either be a simple child name (e.g. 'fred') or a
+ * The relative path can either be a simple child name (e.g. 'fred') or a 
  * deeper slash-separated path (e.g. 'fred/name/first').
  *
  * @param pathString A relative path from this location to the desired child location.
@@ -82,29 +83,40 @@
 
 /** @name Writing data */
 
-/**
- * Write data to this Firebase location. This will overwrite any data
- * at this location and all child locations.
- *
- * Data types that can be set are:
- * * NSString -- @"Hello World"
- * * NSNumber (also includes boolean) -- @YES, @43, @4.333
- * * NSDictionary -- @{@"key": @"value"}
- * * NSArray
- *
- * The effect of the write will be visible immediately and the corresponding
- * events will be triggered. Synchronization of the data to the Firebase
- * servers will also be started.
- *
- * Passing null for the new value is equivalent to calling remove:;
- * all data at this location or any child location will be deleted.
- *
- * Note that setValue: will remove any priority stored at this location, so if priority
- * is meant to be preserved, you should use setValue:andPriority: instead.
- *
- * @param value The value to be written.
+/*!  Write data to this Firebase location.
+
+This will overwrite any data at this location and all child locations. 
+ 
+Data types that can be set are:
+
+- NSString -- @"Hello World"
+- NSNumber (also includes boolean) -- @YES, @43, @4.333
+- NSDictionary -- @{@"key": @"value", @"nested": @{@"another": @"value"} }
+- NSArray
+
+The effect of the write will be visible immediately and the corresponding
+events will be triggered. Synchronization of the data to the Firebase 
+servers will also be started.
+ 
+Passing null for the new value is equivalent to calling remove:;
+all data at this location or any child location will be deleted.
+
+Note that setValue: will remove any priority stored at this location, so if priority
+is meant to be preserved, you should use setValue:andPriority: instead.
+
+
+**Server Values** - Placeholder values you may write into Firebase as a value or priority
+that will automatically be populated by the Firebase Server.
+
+- kFirebaseServerValueTimestamp - The number of milliseconds since the Unix epoch
+
+ 
+@param value The value to be written.
  */
 - (void) setValue:(id)value;
+
+
+#define kFirebaseServerValueTimestamp @{ @".sv": @"timestamp" }
 
 
 /**
@@ -114,7 +126,7 @@
  * @param value The value to be written.
  * @param block The block to be called after the write has been committed to the Firebase servers.
  */
-- (void) setValue:(id)value withCompletionBlock:(void (^)(NSError* error))block;
+- (void) setValue:(id)value withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /**
@@ -135,14 +147,14 @@
  * @param priority The priority to be attached to that data.
  * @param block The block to be called after the write has been committed to the Firebase servers.
  */
-- (void) setValue:(id)value andPriority:(id)priority withCompletionBlock:(void (^)(NSError* error))block;
+- (void) setValue:(id)value andPriority:(id)priority withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /**
  * Remove the data at this Firebase location. Any data at child locations will also be deleted.
- *
+ * 
  * The effect of the delete will be visible immediately and the corresponding events
- * will be triggered. Synchronization of the delete to the Firebase servers will
+ * will be triggered. Synchronization of the delete to the Firebase servers will 
  * also be started.
  *
  * remove: is equivalent to calling setValue:nil
@@ -156,7 +168,7 @@
  *
  * @param block The block to be called after the remove has been committed to the Firebase servers.
  */
-- (void) removeValueWithCompletionBlock:(void (^)(NSError* error))block;
+- (void) removeValueWithCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 /**
  * Set a priority for the data at this Firebase location.
@@ -170,11 +182,11 @@
  * Children are sorted based on this priority using the following rules:
  *
  * Children with no priority (a null priority) come first. They are ordered lexicographically by name.
- * Children with a priority that is parsable as a number come next. They are
+ * Children with a priority that is parsable as a number come next. They are 
  * sorted numerically by priority first (small to large) and lexicographically by name second (A to z).
- * Children with non-numeric priorities come last. They are sorted lexicographically
+ * Children with non-numeric priorities come last. They are sorted lexicographically 
  * by priority first and lexicographically by name second.
- * Setting the priority to null removes any existing priority.
+ * Setting the priority to null removes any existing priority. 
  * Note that priorities are parsed and ordered as IEEE 754 double-precision floating-point numbers.
  *
  * @param priority The priority to set at the specified location.
@@ -189,39 +201,49 @@
  * @param priority The priority to set at the specified location.
  * @param block The block that is triggered after the priority has been written on the servers.
  */
-- (void) setPriority:(id)priority withCompletionBlock:(void (^)(NSError* error))block;
+- (void) setPriority:(id)priority withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 /**
  * Update changes the values of the keys specified in the dictionary without overwriting other
  * keys at this location.
  *
- * @param value A dictionary of the keys to change and their new values
+ * @param values A dictionary of the keys to change and their new values
  */
 - (void) updateChildValues:(NSDictionary *)values;
 
 /**
- * The same as update: with a block block that is called once the update has been committed to the
+ * The same as update: with a block block that is called once the update has been committed to the 
  * Firebase servers
  *
- * @param value A dictionary of the keys to change and their new values
+ * @param values A dictionary of the keys to change and their new values
  * @param block The block that is triggered after the update has been written on the Firebase servers
  */
-- (void) updateChildValues:(NSDictionary *)values withCompletionBlock:(void (^)(NSError* error))block;
+- (void) updateChildValues:(NSDictionary *)values withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /** @name Attaching observers to read data */
 
-/**
- * observeEventType:withBlock: is used to listen for data changes at a particular location.
- * This is the primary way to read data from Firebase. Your block will be triggered
- * for the initial data and again whenever the data changes.
- *
- * Use removeObserverWithHandle: to stop receiving updates.
- *
- * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
- * @return A handle used to unregister this block later using removeObserverWithHandle:
- */
+/*! observeEventType:withBlock: is used to listen for data changes at a particular location.
+ 
+This is the primary way to read data from Firebase. Your block will be triggered
+for the initial data and again whenever the data changes.
+ 
+Use removeObserverWithHandle: to stop receiving updates.
+ 
+Supported events types for all realtime observers are specified in FEventType as:
+
+    typedef enum {
+      FEventTypeChildAdded,    // 0, fired when a new child node is added to a location
+      FEventTypeChildRemoved,  // 1, fired when a child node is removed from a location
+      FEventTypeChildChanged,  // 2, fired when a child node at a location changes
+      FEventTypeChildMoved,    // 3, fired when a child node moves relative to the other child nodes at a location
+      FEventTypeValue          // 4, fired when any data changes at a location and, recursively, any children
+    } FEventType;
+
+@param eventType The type of event to listen for.
+@param block The block that should be called with initial data and updates as a FDataSnapshot.
+@return A handle used to unregister this block later using removeObserverWithHandle:
+*/
 - (FirebaseHandle) observeEventType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block;
 
 
@@ -234,7 +256,7 @@
  * Use removeObserverWithHandle: to stop receiving updates.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates, as well as the previous child's name.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot, as well as the previous child's name.
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
 - (FirebaseHandle) observeEventType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block;
@@ -250,7 +272,7 @@
  * Use removeObserverWithHandle: to stop receiving updates.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot.
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
@@ -268,7 +290,7 @@
  * Use removeObserverWithHandle: to stop receiving updates.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates, as well as the previous child's name.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot, as well as the previous child's name.
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
@@ -279,7 +301,7 @@
  * This is equivalent to observeEventType:withBlock:, except the block is immediately canceled after the initial data is returned.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot.
  */
 - (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block;
 
@@ -289,7 +311,7 @@
  * FEventTypeChildChanged events, your block will be passed the name of the previous node by priority order.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot, as well as the previous child's name.
  */
 - (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block;
 
@@ -300,7 +322,7 @@
  * The cancelBlock will be called if you do not have permission to read data at this location.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
 - (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(void))cancelBlock;
@@ -313,7 +335,7 @@
  * The cancelBlock will be called if you do not have permission to read data at this location.
  *
  * @param eventType The type of event to listen for.
- * @param block The block that should be called with initial data and updates.
+ * @param block The block that should be called with initial data and updates as a FDataSnapshot, as well as the previous child's name.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
 - (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(void))cancelBlock;
@@ -321,7 +343,7 @@
 /** @name Detaching observers */
 
 /**
- * Detach a block previously attached with observeEventType:withBlock:.
+ * Detach a block previously attached with observeEventType:withBlock:. 
  *
  * @param handle The handle returned by the call to observeEventType:withBlock: which we are trying to remove.
  */
@@ -376,7 +398,7 @@
  *
  * @param endPriority The upper bound, inclusive, for the priority of data visible to the returned FQuery
  * @param childName The upper bound, inclusive, for the name of nodes with priority equal to endPriority
- * @return An FQuery instance, limited to data with priority less than endPriority or equal to endPriority and with a name less than or equal to childName
+ * @return An FQuery instance, limited to data with priority less than endPriority or equal to endPriority and with a name less than or equal to childName 
  */
 - (FQuery *) queryEndingAtPriority:(id)endPriority andChildName:(NSString *)childName;
 
@@ -387,7 +409,7 @@
  * The FQuery instance returned by queryLimitedToNumberOfChildren: will respond to events at from at most limit child nodes
  *
  * @param limit The upper bound, inclusive, for the number of child nodes to receive events for
- * @return An FQuery instance, limited to at most limit child nodes.
+ * @return An FQuery instance, limited to at most limit child nodes. 
  */
 - (FQuery *) queryLimitedToNumberOfChildren:(NSUInteger)limit;
 
@@ -417,7 +439,7 @@
  * @param value The value to be set after the connection is lost.
  * @param block Block to be triggered when the operation has been queued up on the Firebase servers
  */
-- (void) onDisconnectSetValue:(id)value withCompletionBlock:(void (^)(NSError* error))block;
+- (void) onDisconnectSetValue:(id)value withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /**
@@ -442,7 +464,7 @@
  * @param priority The priority to be set after the connection is lost.
  * @param block Block to be triggered when the operation has been queued up on the Firebase servers
  */
-- (void) onDisconnectSetValue:(id)value andPriority:(id)priority withCompletionBlock:(void (^)(NSError* error))block;
+- (void) onDisconnectSetValue:(id)value andPriority:(id)priority withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /**
@@ -464,7 +486,7 @@
  *
  * @param block Block to be triggered when the operation has been queued up on the Firebase servers
  */
-- (void) onDisconnectRemoveValueWithCompletionBlock:(void (^)(NSError* error))block;
+- (void) onDisconnectRemoveValueWithCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 
@@ -488,12 +510,12 @@
  * @param values A dictionary of child node names and the values to set them to after the connection is lost.
  * @param block A block that will be called once the operation has been queued up on the Firebase servers
  */
-- (void) onDisconnectUpdateChildValues:(NSDictionary *)values withCompletionBlock:(void (^)(NSError* error))block;
+- (void) onDisconnectUpdateChildValues:(NSDictionary *)values withCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /**
  * Cancel any operations that are set to run on disconnect. If you previously called onDisconnectSetValue:,
- * onDisconnectRemoveValue:, or onDisconnectUpdateChildValues:, and no longer want the values updated when the
+ * onDisconnectRemoveValue:, or onDisconnectUpdateChildValues:, and no longer want the values updated when the 
  * connection is lost, call cancelDisconnectOperations:
  */
 - (void) cancelDisconnectOperations;
@@ -506,7 +528,7 @@
  *
  * @param block A block that will be triggered once the Firebase servers have acknowledged the cancel request.
  */
-- (void) cancelDisconnectOperationsWithCompletionBlock:(void (^)(NSError* error))block;
+- (void) cancelDisconnectOperationsWithCompletionBlock:(void (^)(NSError* error, Firebase* ref))block;
 
 
 /** @name Authenticating */
@@ -516,6 +538,7 @@
  * the results of the authenticated attempt, and the cancelBlock will be called if the credentials become invalid
  * at some point after authentication has succeeded.
  *
+ * @param credential The Firebase authentication JWT generated by a secure code on a remote server.
  * @param block This block will be called with the results of the authentication attempt
  * @param cancelBlock This block will be called if at any time in the future the credentials become invalid
  */
@@ -584,7 +607,7 @@
 /** @name Retrieving String Representation */
 
 /**
- * Gets the absolute URL of this Firebase location.
+ * Gets the absolute URL of this Firebase location. 
  *
  * @return The absolute URL of the referenced Firebase location.
  */
@@ -620,6 +643,8 @@
 /** @name Global configuration and settings */
 
 /** Set the default dispatch queue for event blocks.
+*
+* @param queue The queue to set as the default for running blocks for all Firebase event types.
 */
 + (void) setDispatchQueue:(dispatch_queue_t)queue;
 

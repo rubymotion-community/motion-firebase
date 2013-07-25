@@ -31,7 +31,7 @@
 @class Firebase;
 
 /**
- * An FDataSnapshot contains data from a Firebase location. Any time you read
+ * An FDataSnapshot contains data from a Firebase location. Any time you read 
  * Firebase data, you receive the data as an FDataSnapshot.
  *
  * FDataSnapshots are passed to the blocks you attach with observeEventType:withBlock: or observeSingleEvent:withBlock:.
@@ -46,7 +46,7 @@
 
 /**
  * Get an FDataSnapshot for the location at the specified relative path.
- * The relative path can either be a simple child name (e.g. 'fred')
+ * The relative path can either be a simple child name (e.g. 'fred') 
  * or a deeper slash-separated path (e.g. 'fred/name/first'). If the child
  * location has no data, an empty FDataSnapshot is returned.
  *
@@ -67,7 +67,7 @@
 
 /**
  * Return YES if the DataSnapshot has any children.
- *
+ * 
  * @return YES if this snapshot has any children, else NO.
  */
 - (BOOL) hasChildren;
@@ -78,7 +78,7 @@
 /**
  * Returns the raw value at this location, coupled with any metadata, such as priority.
  *
- * Priorities, where they exist, are accessible under the ".priority" key in instances of NSDictionary.
+ * Priorities, where they exist, are accessible under the ".priority" key in instances of NSDictionary. 
  * For leaf locations with priorities, the value will be under the ".value" key.
  */
 - (id) valueInExportFormat;

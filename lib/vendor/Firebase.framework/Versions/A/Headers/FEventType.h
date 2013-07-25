@@ -37,7 +37,7 @@ typedef enum {
     FEventTypeChildRemoved,  // 1, fired when a child node is removed from a location
     FEventTypeChildChanged,  // 2, fired when a child node at a location changes
     FEventTypeChildMoved,    // 3, fired when a child node moves relative to the other child nodes at a location
-    FEventTypeValue          // 4, fired when any data changes at a location
+    FEventTypeValue          // 4, fired when any data changes at a location and, recursively, any children
 } FEventType;
 
 #endif
