@@ -5,6 +5,8 @@ A RubyMotion wrapper for the Firebase SDK.
 
 Adds more rubyesque methods to the built-in classes.
 
+For a Ruby (MRI) Firebase wrapper, check out <https://github.com/derailed/bigbertha>.
+
 Versioning
 -------
 
