@@ -105,7 +105,7 @@ SDK
       disconnect: proc { |error| 'completion block', },
       )
     firebase.unauth
-    # when using FirebaseAuthClient to authenticate, this child node should be
+    # when using FirebaseSimpleLogin to authenticate, this child node should be
     # monitored for changes
     firebase.auth_state
     # usually you'll want to monitor its value, so this is a helper for that:
@@ -144,12 +144,12 @@ SDK
     Firebase.sdkVersion
 
 
-# FirebaseAuthClient Class Reference
+# FirebaseSimpleLogin Class Reference
 
-##### Initializing a FirebaseAuthClient instance
+##### Initializing a FirebaseSimpleLogin instance
 
     ref = Firebase.new(url)
-    auth = FirebaseAuthClient.new(ref)
+    auth = FirebaseSimpleLogin.new(ref)
 
 ##### Checking current authentication status
 
@@ -186,7 +186,7 @@ passed an array of usernames and should return an index or `NSNotFound`.
 
 ##### Global configuration and settings
 
-    FirebaseAuthClient.sdkVersion
+    FirebaseSimpleLogin.sdkVersion
 
 ##### Retrieving String Representation
 

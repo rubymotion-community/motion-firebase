@@ -71,7 +71,7 @@ class FirebaseSimpleLogin
       app_id = credentials[:app_id]
       raise "app_id is required in #{__method__}" unless app_id
     end
-    on_multiple = credentials[:on_multiple] || ->(accounts) { accounts[0] }
+    on_multiple = credentials[:on_multiple] || ->(accounts) { 0 }
     loginToTwitterAppWithId(app_id, multipleAccountsHandler:on_multiple, withCompletionBlock:block)
   end
 

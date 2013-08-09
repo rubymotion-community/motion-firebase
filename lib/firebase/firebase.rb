@@ -147,6 +147,7 @@ class Firebase
     return self
   end
 
+  # Calls the block when the value is true
   def on_auth(options={}, &block)
     auth_state.on(:value, options, &block)
   end
