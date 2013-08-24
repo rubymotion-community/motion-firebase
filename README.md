@@ -178,7 +178,7 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 
     auth.login_to_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
 
-##### Twitter authentication methdos
+##### Twitter authentication methods
 
 `credentials` should include `:app_id` and `:on_multiple` block. The
 `:on_multiple` block is called when more than one account is found.  It is
