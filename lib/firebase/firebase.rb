@@ -186,6 +186,10 @@ class Firebase
     return self
   end
 
+  def to_s
+    description
+  end
+
   def inspect
     "#<#{self.class}:0x#{self.object_id.to_s(16)}>"
   end
