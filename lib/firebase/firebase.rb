@@ -1,4 +1,8 @@
 class Firebase
+  ERRORS = {
+    -9999 => :email_in_use,
+    -2 => :wrong_password,
+  }
 
   def self.convert_event_type(event_type)
     case event_type
