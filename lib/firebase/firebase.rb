@@ -79,6 +79,10 @@ class Firebase
     end
   end
 
+  def child(name)
+    childByAppendingPath(name)
+  end
+
   def []=(key, value)
     childByAppendingPath(key).set(value)
   end
