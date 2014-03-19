@@ -14,6 +14,6 @@ Motion::Project::App.setup do |app|
   end
 
   app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/Firebase.framework'), :static, headers_dir: 'Headers', products: ['Firebase'])
-  app.libs += ['/usr/lib/libicucore.dylib']
-  app.frameworks += ['CFNetwork', 'Security', 'Foundation']
+  app.libs += ['/usr/lib/libicucore.dylib', 'libc++.dylib']
+  app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
 end
