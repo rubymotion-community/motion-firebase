@@ -1,5 +1,5 @@
 /*
- * Firebase iOS Auth Client Library
+ * Firebase iOS Simple Login Library
  *
  * Copyright © 2013 Firebase - All Rights Reserved
  * https://www.firebase.com
@@ -47,6 +47,12 @@
  * @return A userId for this user. It is unique for the given auth provider.
  */
 @property (nonatomic, strong) NSString* userId;
+
+
+/**
+ * @return A uid for this user. It is unique across all auth providers.
+ */
+@property (nonatomic, strong) NSString* uid;
 
 
 /**

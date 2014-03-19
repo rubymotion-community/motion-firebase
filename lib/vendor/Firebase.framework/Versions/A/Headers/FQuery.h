@@ -88,7 +88,7 @@ typedef NSUInteger FirebaseHandle;
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
-- (FirebaseHandle) observeEventType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(void))cancelBlock;
+- (FirebaseHandle) observeEventType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -106,7 +106,7 @@ typedef NSUInteger FirebaseHandle;
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
-- (FirebaseHandle) observeEventType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(void))cancelBlock;
+- (FirebaseHandle) observeEventType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -137,7 +137,7 @@ typedef NSUInteger FirebaseHandle;
  * @param block The block that should be called with initial data and updates.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
-- (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(void))cancelBlock;
+- (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -150,7 +150,7 @@ typedef NSUInteger FirebaseHandle;
  * @param block The block that should be called with initial data and updates.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
-- (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(void))cancelBlock;
+- (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 /** @name Detaching observers */
 

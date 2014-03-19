@@ -181,13 +181,15 @@ that will automatically be populated by the Firebase Server.
  *
  * Children are sorted based on this priority using the following rules:
  *
- * Children with no priority (a null priority) come first. They are ordered lexicographically by name.
- * Children with a priority that is parsable as a number come next. They are 
- * sorted numerically by priority first (small to large) and lexicographically by name second (A to z).
- * Children with non-numeric priorities come last. They are sorted lexicographically 
- * by priority first and lexicographically by name second.
- * Setting the priority to null removes any existing priority. 
+ * Children with no priority come first.
+ * Children with a number as their priority come next. They are sorted numerically by priority (small to large).
+ * Children with a string as their priority come last. They are sorted lexicographically by priority.
+ * Whenever two children have the same priority (including no priority), they are sorted by name. Numeric 
+ * names come first (sorted numerically), followed by the remaining names (sorted lexicographically).
+ * 
  * Note that priorities are parsed and ordered as IEEE 754 double-precision floating-point numbers.
+ * Names are always stored as strings and are treated as numbers only when they can be parsed as a 
+ * 32-bit integer
  *
  * @param priority The priority to set at the specified location.
  */
@@ -276,7 +278,7 @@ Supported events types for all realtime observers are specified in FEventType as
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
-- (FirebaseHandle) observeEventType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(void))cancelBlock;
+- (FirebaseHandle) observeEventType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -294,7 +296,7 @@ Supported events types for all realtime observers are specified in FEventType as
  * @param cancelBlock The block that should be called if this client no longer has permission to receive these events
  * @return A handle used to unregister this block later using removeObserverWithHandle:
  */
-- (FirebaseHandle) observeEventType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(void))cancelBlock;
+- (FirebaseHandle) observeEventType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -325,7 +327,7 @@ Supported events types for all realtime observers are specified in FEventType as
  * @param block The block that should be called with initial data and updates as a FDataSnapshot.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
-- (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(void))cancelBlock;
+- (void) observeSingleEventOfType:(FEventType)eventType withBlock:(void (^)(FDataSnapshot* snapshot))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 
 /**
@@ -338,7 +340,7 @@ Supported events types for all realtime observers are specified in FEventType as
  * @param block The block that should be called with initial data and updates as a FDataSnapshot, as well as the previous child's name.
  * @param cancelBlock The block that will be called if you don't have permission to access this data
  */
-- (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(void))cancelBlock;
+- (void) observeSingleEventOfType:(FEventType)eventType andPreviousSiblingNameWithBlock:(void (^)(FDataSnapshot* snapshot, NSString* prevName))block withCancelBlock:(void (^)(NSError* error))cancelBlock;
 
 /** @name Detaching observers */
 
@@ -550,6 +552,54 @@ Supported events types for all realtime observers are specified in FEventType as
  */
 - (void) unauth;
 
+/**
+ * Removes any credentials associated with this Firebase. The callback block will be triggered after this operation 
+ * has been acknowledged by the Firebase servers.
+ */
+- (void) unauthWithCompletionBlock:(void (^)(NSError* error))block;
+
+
+/** @name Manual Connection Management */
+
+/**
+ * Manually disconnect the Firebase client from the server and disable automatic reconnection.
+ *
+ * The Firebase client automatically maintains a persistent connection to the Firebase server, 
+ * which will remain active indefinitely and reconnect when disconnected. However, the goOffline( ) 
+ * and goOnline( ) methods may be used to manually control the client connection in cases where 
+ * a persistent connection is undesirable.
+ * 
+ * While offline, the Firebase client will no longer receive data updates from the server. However, 
+ * all Firebase operations performed locally will continue to immediately fire events, allowing 
+ * your application to continue behaving normally. Additionally, each operation performed locally 
+ * will automatically be queued and retried upon reconnection to the Firebase server.
+ * 
+ * To reconnect to the Firebase server and begin receiving remote events, see goOnline( ). 
+ * Once the connection is reestablished, the Firebase client will transmit the appropriate data 
+ * and fire the appropriate events so that your client "catches up" automatically.
+ * 
+ * Note: Invoking this method will impact all Firebase connections. 
+ */
++ (void) goOffline;
+
+/**
+ * Manually reestablish a connection to the Firebase server and enable automatic reconnection.
+ *
+ * The Firebase client automatically maintains a persistent connection to the Firebase server, 
+ * which will remain active indefinitely and reconnect when disconnected. However, the goOffline( ) 
+ * and goOnline( ) methods may be used to manually control the client connection in cases where 
+ * a persistent connection is undesirable.
+ * 
+ * This method should be used after invoking goOffline( ) to disable the active connection. 
+ * Once reconnected, the Firebase client will automatically transmit the proper data and fire 
+ * the appropriate events so that your client "catches up" automatically.
+ * 
+ * To disconnect from the Firebase server, see goOffline( ).
+ * 
+ * Note: Invoking this method will impact all Firebase connections.
+ */
++ (void) goOnline;
+
 
 /** @name Transactions */
 
@@ -651,4 +701,7 @@ Supported events types for all realtime observers are specified in FEventType as
 /** Retrieve the Firebase SDK version. */
 + (NSString *) sdkVersion;
 
++ (void) setLoggingEnabled:(BOOL)enabled;
+
++ (void) setOption:(NSString*)option to:(id)value;
 @end

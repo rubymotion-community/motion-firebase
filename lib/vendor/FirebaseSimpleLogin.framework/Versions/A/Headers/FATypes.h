@@ -1,5 +1,5 @@
 /*
- * Firebase iOS Auth Client Library
+ * Firebase iOS Simple Login Library
  *
  * Copyright © 2013 Firebase - All Rights Reserved
  * https://www.firebase.com
@@ -44,7 +44,9 @@ typedef enum {
     FAProviderInvalid = -1,
     FAProviderPassword = 1,
     FAProviderFacebook = 2,
-    FAProviderTwitter = 3
+    FAProviderTwitter = 3,
+    FAProviderAnonymous = 4,
+    FAProviderGoogle = 5
 } FAProvider;
 
 #endif

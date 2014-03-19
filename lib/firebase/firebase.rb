@@ -44,8 +44,24 @@ class Firebase
     return self
   end
 
+  def unauth(&block)
+    if block
+      unauthWithCompletionBlock(block)
+    else
+      super()
+    end
+  end
+
   def auth_state
     self.root[".info/authenticated"]
+  end
+
+  def offline!
+    goOffline
+  end
+
+  def online!
+    goOnline
   end
 
   def run(options={}, &transaction)

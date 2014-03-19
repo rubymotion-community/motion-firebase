@@ -1,5 +1,5 @@
 /*
- * Firebase iOS Auth Client Library
+ * Firebase iOS Simple Login Library
  *
  * Copyright © 2013 Firebase - All Rights Reserved
  * https://www.firebase.com
@@ -31,19 +31,32 @@
 
 #import "FAUser.h"
 
+/**
+ * A FirebaseSimpleLogin client instance for authenticating Firebase references with email / password, Facebook, or Twitter.
+ */
 @interface FirebaseSimpleLogin : NSObject
+
 
 /** @name Initializing a FirebaseSimpleLogin instance */
 
 
 /**
- * You must initialize the auth client with a Firebase reference. The auth client will use that reference to authenticate to the Firebase servers
+ * You must initialize the Simple Login with a Firebase reference. The Simple Login client will use that reference to authenticate to the Firebase servers
  *
  * @param ref A valid Firebase reference
  * @return An initialized instance of FirebaseSimpleLogin
  */
 - (id) initWithRef:(Firebase *)ref;
 
+
+/**
+ * You must initialize the Simple Login with a Firebase reference. The Simple Login client will use that reference to authenticate to the Firebase servers
+ *
+ * @param ref A valid Firebase reference
+ @ @param options A dictionary of options to respect (i.e. @{ @"debug": @YES } )
+ * @return An initialized instance of FirebaseSimpleLogin
+ */
+- (id) initWithRef:(Firebase *)aRef andOptions:(NSDictionary *)options;
 
 
 /** @name Checking current authentication status */
@@ -79,7 +92,7 @@
 
 
 /**
- * Remove a user account with the given email and password. 
+ * Remove a user account with the given email and password.
  *
  * @param email The email of the account to be removed
  * @param password The password for the account to be removed
@@ -108,6 +121,14 @@
  */
 - (void) changePasswordForEmail:(NSString *)email oldPassword:(NSString *)oldPassword newPassword:(NSString *)newPassword completionBlock:(void (^)(NSError* error, BOOL success))block;
 
+/**
+ * Send a password reset email to the owner of the account with the given email. Results are reported to the supplied block.
+ *
+ * @param email The email of the account to be removed
+ * @param block A block to receive the results of the operation
+ */
+- (void) sendPasswordResetForEmail:(NSString *)email andCompletionBlock:(void (^)(NSError* error, BOOL success))block;
+
 
 /** @name Facebook authentication methods */
 
@@ -116,7 +137,7 @@
  * Attempts to log the user in to the Facebook app with the specified appId. The block will be called with the results of the attempt.
  *
  * @param appId The Facebook application id for the app to log into. Make sure that the app has your bundle id registered in the facebook developer console
- * @param permissions An array of strings, specifying the desired permissions for this user. If the array is empty, 'email' permission will be requested 
+ * @param permissions An array of strings, specifying the desired permissions for this user. If the array is empty, 'email' permission will be requested
  * @param audience One of ACFacebookAudienceEveryone, ACFacebookAudienceFriends, ACFacebookAudienceOnlyMe, or nil. Required if your requested permissions include any write access. Assumed to be ACFacebookAudienceOnlyMe is nil is passed
  * @param block A block that will be called with the results of the login attempt
  */
@@ -124,11 +145,24 @@
 
 - (void) createFacebookUserWithToken:(NSString *)token appId:(NSString *)appId withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
-/** @name Twitter authentication methdos */
+
+/** @name Google authentication methods */
 
 
 /**
- * Attempts to log the user in to the Twitter app with the specified appId. 
+ * Attempts to log the user in to the Google app with the specified access token. The block will be called with the results of the attempt.
+ *
+ * @param accessToken The Google access token to use when logging in
+ * @param block A block that will be called with the results of the login attempt
+ */
+- (void) loginToGoogleWithAccessToken:(NSString *)accessToken withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
+
+
+/** @name Twitter authentication methods */
+
+
+/**
+ * Attempts to log the user in to the Twitter app with the specified appId.
  * Requires a block to handle the case where multiple twitter accounts are registered with the OS. The block will be given an array of usernames and should return
  * the index of the desired account. If, after seeing the list, no account is selected, return NSNotFound.
  *
@@ -138,6 +172,15 @@
  */
 - (void) loginToTwitterAppWithId:(NSString *)appId multipleAccountsHandler:(int (^)(NSArray* usernames))accountSelection withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
+/** @name Anonymous authentication methods */
+
+
+/**
+ * Attempts to log the user in anonymously. The block will receive the results of the attempt.
+ *
+ * @param block A block to receive the results of the login attempt.
+ */
+- (void) loginAnonymouslywithCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
 
 /** @name Global configuration and settings */

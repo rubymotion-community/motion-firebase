@@ -1,7 +1,11 @@
 class FirebaseSimpleLogin
 
-  def self.new(ref)
-    alloc.initWithRef(ref)
+  def self.new(ref, options=nil)
+    if options
+      alloc.initWithRef(ref, options: options)
+    else
+      alloc.initWithRef(ref)
+    end
   end
 
   def check(&and_then)
@@ -14,7 +18,7 @@ class FirebaseSimpleLogin
     email = credentials[:email]
     password = credentials[:password]
     begin
-      createUserWithEmail(email, password:password, andCompletionBlock:block)
+      createUserWithEmail(email, password: password, andCompletionBlock: block)
     rescue RuntimeError => e
       block.call(e, nil)
     end
@@ -25,7 +29,7 @@ class FirebaseSimpleLogin
     raise "password is required in #{__method__}" unless credentials.key?(:password)
     email = credentials[:email]
     password = credentials[:password]
-    removeUserWithEmail(email, password:password, andCompletionBlock:block)
+    removeUserWithEmail(email, password: password, andCompletionBlock: block)
   end
 
   def login(credentials, &block)
@@ -34,7 +38,7 @@ class FirebaseSimpleLogin
     email = credentials[:email]
     password = credentials[:password]
     begin
-      loginWithEmail(email, andPassword:password, withCompletionBlock:block)
+      loginWithEmail(email, andPassword: password, withCompletionBlock: block)
     rescue RuntimeError => e
       block.call(e, nil)
     end
@@ -47,7 +51,11 @@ class FirebaseSimpleLogin
     email = credentials[:email]
     old_password = credentials[:old_password]
     new_password = credentials[:new_password]
-    changePasswordForEmail(email, oldPassword:old_password, newPassword:new_password, completionBlock:block)
+    changePasswordForEmail(email, oldPassword: old_password, newPassword: new_password, completionBlock: block)
+  end
+
+  def send_password_reset(email, &block)
+    sendPasswordResetForEmail(email, andCompletionBlock: block)
   end
 
   def login_to_facebook(credentials, &block)
@@ -60,11 +68,11 @@ class FirebaseSimpleLogin
     end
     permissions = credentials[:permissions] || ['email']
     audience = credentials[:audience] || ACFacebookAudienceOnlyMe
-    loginToFacebookAppWithId(app_id, permissions:permissions, audience:audience, withCompletionBlock:block)
+    loginToFacebookAppWithId(app_id, permissions: permissions, audience: audience, withCompletionBlock: block)
   end
 
   def login_to_twitter(credentials, &block)
-    if credentials.is_a?(String)
+    if credentials.is_a?(NSString)
       app_id = credentials
       credentials = {}
     else
@@ -72,11 +80,22 @@ class FirebaseSimpleLogin
       raise "app_id is required in #{__method__}" unless app_id
     end
     on_multiple = credentials[:on_multiple] || ->(accounts) { 0 }
-    loginToTwitterAppWithId(app_id, multipleAccountsHandler:on_multiple, withCompletionBlock:block)
+    loginToTwitterAppWithId(app_id, multipleAccountsHandler: on_multiple, withCompletionBlock: block)
   end
 
-  # def inspect
-  #   "#<#{self.class}:0x#{self.object_id.to_s(16)}>"
-  # end
+  def login_to_google(credentials, &block)
+    if credentials.is_a?(NSString)
+      app_id = credentials
+      credentials = {}
+    else
+      app_id = credentials[:app_id]
+      raise "app_id is required in #{__method__}" unless app_id
+    end
+    loginToGoogleWithAccessToken(app_id, withCompletionBlock: block)
+  end
+
+  def login_anonymously(&block)
+    loginAnonymouslywithCompletionBlock(block)
+  end
 
 end

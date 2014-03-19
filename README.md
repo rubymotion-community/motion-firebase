@@ -87,6 +87,8 @@ SDK
 
 ##### Managing presence
 
+    firebase.online!
+    firebase.offline!
     firebase.on_disconnect(value)
     firebase.on_disconnect(value) { |error| 'completion block' }
     firebase.on_disconnect(value, priority:priority)
@@ -106,7 +108,11 @@ SDK
       completion: proc { |error, data| 'completion block' },
       disconnect: proc { |error| 'completion block', },
       )
+    # calls `unauth`, or if you pass a block calls `unauthWithCompletionBlock`
     firebase.unauth
+    firebase.unauth do |error|
+      # ...
+    end
     # when using FirebaseSimpleLogin to authenticate, this child node should be
     # monitored for changes
     firebase.auth_state
