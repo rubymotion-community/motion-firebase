@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    motion-firebase (2.0.9)
+    motion-firebase (2.0.10)
 
 GEM
   remote: https://rubygems.org/
