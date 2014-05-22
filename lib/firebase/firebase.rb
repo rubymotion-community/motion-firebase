@@ -118,6 +118,12 @@ class Firebase
     return ref
   end
 
+  def push(value, &and_then)
+    ref = childByAutoId
+    ref.update(value, &and_then)
+    return ref
+  end
+
   def value=(value)
     setValue(value)
   end
