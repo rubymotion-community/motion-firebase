@@ -1,3 +1,4 @@
+MOTION_FIREBASE_SPEC = 'https://motion-firebase.firebaseio.com/'
 FirechatNS = 'https://firechat-ios.firebaseio-demo.com/'
 
 class AppDelegate
