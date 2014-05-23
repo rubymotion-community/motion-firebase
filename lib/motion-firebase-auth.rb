@@ -14,9 +14,5 @@ Motion::Project::App.setup do |app|
   end
 
   app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/FirebaseSimpleLogin.framework'), :static, headers_dir: 'Headers', products: ['FirebaseSimpleLogin'])
-  app.libs += ['/usr/lib/libsqlite3.dylib']
   app.weak_frameworks += ['Accounts', 'Social']
-  app.entitlements['keychain-access-groups'] ||= [
-    app.seed_id + '.' + app.identifier
-  ]
 end
