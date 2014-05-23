@@ -114,13 +114,13 @@ class Firebase
 
   def <<(value)
     ref = childByAutoId
-    ref.update(value)
+    ref.set(value)
     return ref
   end
 
   def push(value, &and_then)
     ref = childByAutoId
-    ref.update(value, &and_then)
+    ref.set(value, &and_then)
     return ref
   end
 
