@@ -7,7 +7,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     rake (10.0.3)
-    sugarcube (0.20.20)
+    sugarcube (1.6.1)
 
 PLATFORMS
   ruby
