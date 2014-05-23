@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rake'
 gem 'sugarcube', require: 'sugarcube-classic'
-gem 'motion-firebase', :path => '..', require: [
+gem 'motion-firebase', :path => '../..', require: [
   'motion-firebase',
   'motion-firebase-auth',
 ]

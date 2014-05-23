@@ -1,14 +1,16 @@
-MOTION_FIREBASE_SPEC = 'https://motion-firebase.firebaseio.com/'
 FirechatNS = 'https://firechat-ios.firebaseio-demo.com/'
 
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    true
+    return true if RUBYMOTION_ENV == 'test'
+
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     ctlr = MyController.new
     first = UINavigationController.alloc.initWithRootViewController(ctlr)
     @window.rootViewController = first
     @window.makeKeyAndVisible
+
+    true
   end
 end
 
