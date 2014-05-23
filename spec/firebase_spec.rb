@@ -108,8 +108,8 @@ describe 'Firebase' do
 
     end
 
-    # def clear!(&and_then)
     # def <<(value)
+    # def push(value)
     # def value=(value)
     # def set(value, &and_then)
     # def priority=(value)
