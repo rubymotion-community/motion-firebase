@@ -20,18 +20,26 @@ SDK
 
 ##### Initializing a Firebase object
 
+```ruby
     Firebase.new(url)
+```
 
 ##### Getting references to children locations
 
+```ruby
     firebase[path]
     firebase[]  # childByAutoId
     firebase['fred']  # childByAppendingPath('fred')
+```
 
 ##### Writing data
 
-    firebase << {'key': 'value'}
-    # => firebase.childByAutoId.updateChildValues(values), returns the new child
+```ruby
+    firebase << { key: 'value' }
+    # => firebase.childByAutoId.setValue({ key: 'value'}), returns the new child
+
+    # Since firebase works with simple objects, this is equivalent to
+    # => firebase.childByAutoId.setValue({ 'key' => 'value'})
 
     # set value
     firebase.value = value
@@ -52,11 +60,19 @@ SDK
     firebase.priority(priority)
     firebase.priority(priority) { |error| 'completion block' }
 
-    firebase.update(values)
-    firebase.update(values) { |error| 'completion block' }
+    # "updating" is used to update some children, but leaving others unchanged.
+    # (set, on the other hand, replaces the value entirely, so using set with a
+    # hash will remove keys that weren't specified in the new hash)
+    firebase.set({ first_name: 'motion', last_name: 'fireball' })
+    firebase.update(last_name: 'firebase')  # only updates last_name, first_name is left unchanged
+    firebase.update(last_name: 'firebase') { |error| 'completion block' }
+    # for comparison:
+    firebase.set(last_name: 'firebase')  # first_name is now 'nil'
+```
 
 ##### Attaching observers to read data
 
+```ruby
     handle = firebase.on(event_type) { |snapshot| 'completion block' }
     handle = firebase.on(event_type) { |snapshot, previous_sibling_name| 'completion block' }
     handle = firebase.on(event_type,
@@ -69,24 +85,41 @@ SDK
       completion: proc { |snapshot, previous_sibling_name| 'completion block' },
       disconnect: proc { 'completion block' }
       )
+```
 
 ##### Detaching observers
 
+```ruby
     firebase.off
+    # => firebase.removeAllObservers
+
     firebase.off(handle)
+    # => firebase.removeObserverWithHandle(handle)
+```
 
-##### Querying and limiting
+##### Priority and Limiting
+###### similar-to-yet-different-than "ORDER BY" and "LIMIT"
 
-    # these are not wrapped at the moment, because I don't completely understand
-    # what they do.
-    # firebase.queryStartingAtPriority()
-    # firebase.queryStartingAtPriority(andChildName:)
-    # firebase.queryEndingAtPriority()
-    # firebase.queryEndingAtPriority(andChildName:)
-    # firebase.queryLimitedToNumberOfChildren()
+```ruby
+    firebase.start_at(priority)
+    # => firebase.queryStartingAtPriority(priority)
+
+    firebase.start_at(priority, child: child_name)
+    # => firebase.queryStartingAtPriority(priority, andChildName: child_name)
+
+    firebase.end_at(priority)
+    # => firebase.queryEndingAtPriority(priority)
+
+    firebase.end_at(priority, child: child_name)
+    # => firebase.queryEndingAtPriority(priority, andChildName: child_name)
+
+    firebase.limit(limit)
+    # => firebase.queryLimitedToNumberOfChildren(limit)
+```
 
 ##### Managing presence
 
+```ruby
     firebase.online!
     firebase.offline!
     firebase.on_disconnect(value)
@@ -99,9 +132,11 @@ SDK
     firebase.on_disconnect({ child: values }) { |error| 'completion block' }
     firebase.cancel_disconnect
     firebase.cancel_disconnect { |error| 'completion block' }
+```
 
 ##### Authenticating
 
+```ruby
     firebase.auth(credential)
     firebase.auth(credential) { |error, data| 'completion block' }
     firebase.auth(credential,
@@ -124,6 +159,7 @@ SDK
 
 ##### Transactions
 
+```ruby
     firebase.run { |data| 'transaction block' }
     firebase.run(
       transaction: proc { |data| 'transaction block' },
@@ -137,17 +173,20 @@ SDK
 
 ##### Retrieving String Representation
 
+```ruby
     firebase.to_s
     firebase.inspect
 
 ##### Properties
 
+```ruby
     firebase.parent
     firebase.root
     firebase.name
 
 ##### Global configuration and settings
 
+```ruby
     Firebase.dispatch_queue=(queue)
     Firebase.sdkVersion
 
@@ -156,15 +195,18 @@ SDK
 
 ##### Initializing a FirebaseSimpleLogin instance
 
+```ruby
     ref = Firebase.new(url)
     auth = FirebaseSimpleLogin.new(ref)
 
 ##### Checking current authentication status
 
+```ruby
     auth.check { |error, user| }
 
 ##### Removing any existing authentication
 
+```ruby
     auth.logout
 
 ##### Email/password authentication methods
@@ -173,6 +215,7 @@ SDK
 For `update`, `credentials` should include `:email`, `:old_password` and
 `:new_password`.
 
+```ruby
     auth.create(email: 'hello@example.com', password: '12345') { |error, user| }
     auth.remove(email: 'hello@example.com', password: '12345') { |error, user| }
     auth.login(email: 'hello@example.com', password: '12345') { |error, user| }
@@ -182,6 +225,7 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 
 `credentials` should include `:app_id` and `:permissions`
 
+```ruby
     auth.login_to_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
 
 ##### Twitter authentication methods
@@ -190,13 +234,16 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 `:on_multiple` block is called when more than one account is found.  It is
 passed an array of usernames and should return an index or `NSNotFound`.
 
+```ruby
     auth.login_to_twitter(app_id: '123abc', on_multiple: ->(usernames) { return 0 }) { |error, user| }
 
 ##### Global configuration and settings
 
+```ruby
     FirebaseSimpleLogin.sdkVersion
 
 ##### Retrieving String Representation
 
+```ruby
     firebase.to_s
     firebase.inspect
