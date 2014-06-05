@@ -192,7 +192,7 @@ class Firebase
         onDisconnectSetValue(value, withCompletionBlock: and_then)
       end
     else
-      if value == :remove
+      if value.nil?
         onDisconnectRemoveValue
       elsif NSDictionary === value
         onDisconnectUpdateChildValues(value)
