@@ -69,6 +69,11 @@ class Firebase
   end
 
   def run(options={}, &transaction)
+    NSLog('The method ‘Firebase#run’ has been deprecated in favor of ‘Firebase#transaction’')
+    self.transaction(options, &transaction)
+  end
+
+  def transaction(options={}, &transaction)
     transaction = transaction || options[:transaction]
     completion_block = options[:completion]
     with_local_events = options[:local]
@@ -79,7 +84,11 @@ class Firebase
         runTransactionBlock(transaction)
       end
     else
-      runTransactionBlock(transaction, andCompletionBlock: completion_block, withLocalEvents: with_local_events)
+      if completion_block
+        runTransactionBlock(transaction, andCompletionBlock: completion_block, withLocalEvents: with_local_events)
+      else
+        runTransactionBlock(transaction, withLocalEvents: with_local_events)
+      end
     end
   end
 
