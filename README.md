@@ -138,9 +138,9 @@ SDK
 ##### Authenticating
 
 ```ruby
-    firebase.auth(credential)
-    firebase.auth(credential) { |error, data| 'completion block' }
-    firebase.auth(credential,
+    firebase.auth(secret_key)
+    firebase.auth(secret_key) { |error, data| 'completion block' }
+    firebase.auth(secret_key,
       completion: proc { |error, data| 'completion block' },
       disconnect: proc { |error| 'completion block', },
       )
@@ -162,22 +162,34 @@ SDK
 ##### Transactions
 
 ```ruby
-    firebase.run { |data| 'transaction block' }
-    firebase.run(
-      transaction: proc { |data| 'transaction block' },
+    firebase.transaction do |data|
+      current_value = data.value
+      current_value += 1
+      FTransactionResult.successWithValue(current_value)
+    end
+    firebase.transaction(local: false) do |data|
+      #...
+    end
+    firebase.transaction(
       completion: proc { |error, committed, snapshot| }
-      )
-    firebase.run(
+      ) do |data|
+      current_value = data.value
+      current_value += 1
+      FTransactionResult.successWithValue(current_value)
+    end
+    firebase.transaction(
       transaction: proc { |data| 'transaction block' },
       completion: proc { |error, committed, snapshot| }
       local: true || false,
       )
+```
 
 ##### Retrieving String Representation
 
 ```ruby
     firebase.to_s
     firebase.inspect
+```
 
 ##### Properties
 
@@ -185,31 +197,37 @@ SDK
     firebase.parent
     firebase.root
     firebase.name
+```
 
 ##### Global configuration and settings
 
 ```ruby
     Firebase.dispatch_queue=(queue)
     Firebase.sdkVersion
-
+```
 
 # FirebaseSimpleLogin Class Reference
+
+    require 'motion-firebase-auth'
 
 ##### Initializing a FirebaseSimpleLogin instance
 
 ```ruby
     ref = Firebase.new(url)
     auth = FirebaseSimpleLogin.new(ref)
+```
 
 ##### Checking current authentication status
 
 ```ruby
     auth.check { |error, user| }
+```
 
 ##### Removing any existing authentication
 
 ```ruby
     auth.logout
+```
 
 ##### Email/password authentication methods
 
@@ -222,6 +240,7 @@ For `update`, `credentials` should include `:email`, `:old_password` and
     auth.remove(email: 'hello@example.com', password: '12345') { |error, user| }
     auth.login(email: 'hello@example.com', password: '12345') { |error, user| }
     auth.update(email: 'hello@example.com', old_password: '12345', new_password: '54321') { |error, success| }
+```
 
 ##### Facebook authentication methods
 
@@ -229,6 +248,7 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 
 ```ruby
     auth.login_to_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
+```
 
 ##### Twitter authentication methods
 
@@ -238,14 +258,17 @@ passed an array of usernames and should return an index or `NSNotFound`.
 
 ```ruby
     auth.login_to_twitter(app_id: '123abc', on_multiple: ->(usernames) { return 0 }) { |error, user| }
+```
 
 ##### Global configuration and settings
 
 ```ruby
     FirebaseSimpleLogin.sdkVersion
+```
 
 ##### Retrieving String Representation
 
 ```ruby
     firebase.to_s
     firebase.inspect
+```
