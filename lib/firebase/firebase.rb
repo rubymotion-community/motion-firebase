@@ -53,7 +53,11 @@ class Firebase
   end
 
   def auth_state
-    self.root[".info/authenticated"]
+    self.root['.info/authenticated']
+  end
+
+  def connected_state
+    self.root['.info/connected']
   end
 
   def offline!

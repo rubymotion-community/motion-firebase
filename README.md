@@ -122,10 +122,11 @@ SDK
 ```ruby
     firebase.online!
     firebase.offline!
-    firebase.on_disconnect(value)
+    firebase.connected_state  # returns a Firebase ref that changes value depending on connectivity
+    firebase.on_disconnect(value)  # set the ref to `value` when disconnected
     firebase.on_disconnect(value) { |error| 'completion block' }
-    firebase.on_disconnect(value, priority:priority)
-    firebase.on_disconnect(value, priority:priority) { |error| 'completion block' }
+    firebase.on_disconnect(value, priority: priority)
+    firebase.on_disconnect(value, priority: priority) { |error| 'completion block' }
     firebase.on_disconnect(nil)
     firebase.on_disconnect(nil) { |error| 'completion block' }
     firebase.on_disconnect({ child: values })
@@ -156,6 +157,7 @@ SDK
     end
     # be a good citizen and turn off the listener later!
     firebase.off(handle)
+```
 
 ##### Transactions
 
