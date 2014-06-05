@@ -6,15 +6,15 @@ class Firebase
 
   def self.convert_event_type(event_type)
     case event_type
-    when :child_added, :added
+    when :child_added, :added, FEventTypeChildAdded
       return FEventTypeChildAdded
-    when :child_moved, :moved
-      FEventTypeChildMoved
-    when :child_changed, :changed
+    when :child_moved, :moved, FEventTypeChildMoved
+      return FEventTypeChildMoved
+    when :child_changed, :changed, FEventTypeChildChanged
       return FEventTypeChildChanged
-    when :child_removed, :removed
+    when :child_removed, :removed, FEventTypeChildRemoved
       return FEventTypeChildRemoved
-    when :value
+    when :value, FEventTypeValue
       return FEventTypeValue
     else
       NSLog("Unknown event type #{event_type.inspect}")
