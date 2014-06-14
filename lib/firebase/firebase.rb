@@ -44,11 +44,13 @@ class Firebase
     return self
   end
 
+  alias_method :old_unauth, :unauth
+
   def unauth(&block)
-    if block
+    if block_given?
       unauthWithCompletionBlock(block)
     else
-      super()
+      old_unauth
     end
   end
 
