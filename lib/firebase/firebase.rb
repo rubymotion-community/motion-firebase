@@ -35,20 +35,28 @@ class Firebase
 
   # @example
   #     firebase = Firebase.new('http://..../')
-  #     firebase.auth('secretkey', completion: ->{}, disconnect:{})
+  #     firebase.auth('secretkey') do
+  #       # connected
+  #     end
+  #     firebase.auth('secretkey', disconnect: ->{}) do
+  #       # connected
+  #     end
+  #     firebase.auth('secretkey', completion: ->{}, disconnect: ->{})
   #     # => firebase.authWithCredential(credential)
   def auth(credential, options={}, &and_then)
-    and_then = and_then || options[:completion]
+    and_then ||= options[:completion]
     disconnect_block = options[:disconnect]
     authWithCredential(credential, withCompletionBlock: and_then, withCancelBlock: disconnect_block)
     return self
   end
 
+  alias_method :old_unauth, :unauth
+
   def unauth(&block)
-    if block
+    if block_given?
       unauthWithCompletionBlock(block)
     else
-      super()
+      old_unauth
     end
   end
 
@@ -78,13 +86,13 @@ class Firebase
     completion_block = options[:completion]
     with_local_events = options[:local]
     if with_local_events.nil?
-      if completion_block
+      if block_given?
         runTransactionBlock(transaction, andCompletionBlock: completion_block)
       else
         runTransactionBlock(transaction)
       end
     else
-      if completion_block
+      if block_given?
         runTransactionBlock(transaction, andCompletionBlock: completion_block, withLocalEvents: with_local_events)
       else
         runTransactionBlock(transaction, withLocalEvents: with_local_events)
@@ -117,7 +125,7 @@ class Firebase
   end
 
   def clear!(&and_then)
-    if and_then
+    if block_given?
       removeValueWithCompletionBlock(and_then)
     else
       removeValue
@@ -142,7 +150,7 @@ class Firebase
   end
 
   def set(value, &and_then)
-    if and_then
+    if block_given?
       setValue(value, withCompletionBlock: and_then)
     else
       setValue(value)
@@ -155,7 +163,7 @@ class Firebase
   end
 
   def priority(value, &and_then)
-    if and_then
+    if block_given?
       setPriority(value, withCompletionBlock: and_then)
     else
       setPriority(value)
@@ -164,7 +172,7 @@ class Firebase
   end
 
   def set(value, priority: priority, &and_then)
-    if and_then
+    if block_given?
       setValue(value, andPriority: priority, withCompletionBlock: and_then)
     else
       setValue(value, andPriority: priority)
@@ -173,7 +181,7 @@ class Firebase
   end
 
   def update(values, &and_then)
-    if and_then
+    if block_given?
       updateChildValues(values, withCompletionBlock: and_then)
     else
       updateChildValues(values)
@@ -182,7 +190,7 @@ class Firebase
   end
 
   def cancel_disconnect(&and_then)
-    if and_then
+    if block_given?
       cancelDisconnectOperationsWithCompletionBlock(and_then)
     else
       cancelDisconnectOperations
@@ -196,7 +204,7 @@ class Firebase
   end
 
   def on_disconnect(value, &and_then)
-    if and_then
+    if block_given?
       if value.nil?
         onDisconnectRemoveValueWithCompletionBlock(and_then)
       elsif NSDictionary === value
@@ -217,7 +225,7 @@ class Firebase
   end
 
   def on_disconnect(value, priority: priority, &and_then)
-    if and_then
+    if block_given?
       onDisconnectSetValue(value, andPriority: priority, withCompletionBlock: and_then)
     else
       onDisconnectSetValue(value, andPriority: priority)
