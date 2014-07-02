@@ -53,7 +53,7 @@
  * You must initialize the Simple Login with a Firebase reference. The Simple Login client will use that reference to authenticate to the Firebase servers
  *
  * @param ref A valid Firebase reference
- @ @param options A dictionary of options to respect (i.e. @{ @"debug": @YES } )
+ @ @param options A dictionary of options to respect (i.e. @{ @"flag": @YES } )
  * @return An initialized instance of FirebaseSimpleLogin
  */
 - (id) initWithRef:(Firebase *)aRef andOptions:(NSDictionary *)options;
@@ -145,9 +145,16 @@
 
 - (void) createFacebookUserWithToken:(NSString *)token appId:(NSString *)appId withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
+/**
+ * Attempts to log the user in to the Facebook app with the specified access token. The block will be called with the results of the attempt.
+ *
+ * @param accessToken The Facebook access token to use when logging in
+ * @param block A block that will be called with the results of the login attempt
+ */
+- (void) loginWithFacebookWithAccessToken:(NSString *)accessToken withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
+
 
 /** @name Google authentication methods */
-
 
 /**
  * Attempts to log the user in to the Google app with the specified access token. The block will be called with the results of the attempt.
@@ -156,6 +163,14 @@
  * @param block A block that will be called with the results of the login attempt
  */
 - (void) loginToGoogleWithAccessToken:(NSString *)accessToken withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
+
+/**
+ * Attempts to log the user in to the Google app with the specified access token. The block will be called with the results of the attempt.
+ *
+ * @param accessToken The Google access token to use when logging in
+ * @param block A block that will be called with the results of the login attempt
+ */
+- (void) loginWithGoogleWithAccessToken:(NSString *)accessToken withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
 
 /** @name Twitter authentication methods */
@@ -171,6 +186,19 @@
  * @param block A block that will be called with the results of the login attempt.
  */
 - (void) loginToTwitterAppWithId:(NSString *)appId multipleAccountsHandler:(int (^)(NSArray* usernames))accountSelection withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
+
+/**
+ * Attempts to log the user in to the Twitter app with the specified access token, access token secret, and Twitter user id. The
+ * block will be called with the results of the attempt.
+ *
+ * @param accessToken The Twitter access token to use when logging in
+ * @param accessTokenSecret The Twitter access token secret to use when logging in
+ * @param twitterUserId The Twitter user id to use when logging in
+ * @param block A block that will be called with the results of the login attempt
+ */
+
+- (void) loginWithTwitterWithAccessToken:(NSString *)accessToken andAccessTokenSecret:(NSString *)accessTokenSecret
+         andTwitterUserId:(NSString *)twitterUserId withCompletionBlock:(void (^)(NSError* error, FAUser* user))block;
 
 /** @name Anonymous authentication methods */
 

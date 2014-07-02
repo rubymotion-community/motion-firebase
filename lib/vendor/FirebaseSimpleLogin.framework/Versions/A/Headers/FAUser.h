@@ -77,6 +77,12 @@
 
 
 /**
+ * @return A flag indicating whether or not the user logged in with a temporary password after a password reset
+ */
+@property (nonatomic) BOOL* isTemporaryPassword;
+
+
+/**
  * @return Metadata about the user provided by third party authentication services if such a service was used for this user. Nil otherwise.
  */
 @property (strong, nonatomic) NSDictionary* thirdPartyUserData;
