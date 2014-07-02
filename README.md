@@ -244,10 +244,11 @@ For `update`, `credentials` should include `:email`, `:old_password` and
 
 ##### Facebook authentication methods
 
-`credentials` should include `:app_id` and `:permissions`
+`credentials` must include `:app_id`. `:permissions` defaults to `['email']` and
+`:audience` defaults to `ACFacebookAudienceOnlyMe`.
 
 ```ruby
-    auth.login_to_facebook(app_id: '123abc', permissions: ['email']) { |error, user| }
+    auth.login_to_facebook(app_id: '123abc') { |error, user| }
 ```
 
 ##### Twitter authentication methods
