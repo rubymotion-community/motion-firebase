@@ -2,7 +2,7 @@ describe 'Firebase' do
 
   it 'can create a Firebase instance' do
     firebase = Firebase.alloc.initWithUrl(MOTION_FIREBASE_SPEC)
-    firebase.should.is_a Firebase
+    firebase.should.be.kind_of Firebase
   end
 
   describe 'Firebase instance' do
@@ -25,13 +25,13 @@ describe 'Firebase' do
 
     it 'should access a child node with []' do
       child = @firebase['child']
-      child.should.is_a Firebase
+      child.should.be.kind_of Firebase
       child.name.should == 'child'
     end
 
     it 'should append child names with multiple arguments to []' do
       child = @firebase['child', '1']
-      child.should.is_a Firebase
+      child.should.be.kind_of Firebase
       child.name.should == '1'
       child.parent.name.should == 'child'
     end
