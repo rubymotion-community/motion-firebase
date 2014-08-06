@@ -30,6 +30,9 @@ class Firebase
   #     Firebase.dispatch_queue(queue)
   #     # => Firebase.setDispatchQueue(queue)
   def self.dispatch_queue=(queue)
+    if queue.is_a?(Dispatch::Queue)
+      queue = queue.dispatch_object
+    end
     setDispatchQueue(queue)
   end
 

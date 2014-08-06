@@ -12,13 +12,16 @@ describe 'Firebase' do
     end
 
     it 'should clear! values' do
-      @firebase.clear!
+      @firebase.setValue('specs')
       wait 0.1 do
-        @firebase.on(:value) do |snapshot|
-          @value = snapshot.value
-        end
+        @firebase.removeValue
         wait 0.1 do
-          @value.should == nil
+          @firebase.on(:value) do |snapshot|
+            @value = snapshot.value
+          end
+          wait 0.1 do
+            @value.should == nil
+          end
         end
       end
     end
