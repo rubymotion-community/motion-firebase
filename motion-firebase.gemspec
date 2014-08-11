@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email   = ['colinta@gmail.com']
   gem.summary       = 'A RubyMotion wrapper for the Firebase iOS SDK'
   gem.description = <<-DESC
-A RubyMotion wrapper for the Firebase iOS SDK
+Adds more rubyesque methods to the built-in classes.
 DESC
 
   gem.homepage    = 'https://github.com/colinta/motion-firebase'

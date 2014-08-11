@@ -10,7 +10,7 @@ For a Ruby (MRI) Firebase wrapper, check out <https://github.com/derailed/bigber
 Versioning
 -------
 
-versioning matches Firebase's SDK major and minor version numbers, but revision
+Versioning matches Firebase's SDK major and minor version numbers, but revision
 numbers could be different.
 
 SDK
