@@ -73,4 +73,7 @@ class FQuery
     queryEndingAtPriority(priority, andChildName:child)
   end
 
+  def limit(limit)
+    queryLimitedToNumberOfChildren(limit)
+  end
 end
