@@ -13,7 +13,7 @@ Motion::Project::App.setup do |app|
     app.files.insert(insert_point, file)
   end
 
-  app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/Firebase.framework'), :static, headers_dir: 'Headers', products: ['Firebase'])
+  app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/Firebase.framework'), :static, headers_dir: 'Headers', products: ['Firebase'], force_load: false)
   app.libs += ['/usr/lib/libicucore.dylib', '/usr/lib/libc++.dylib']
   app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
 end
