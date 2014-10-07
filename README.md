@@ -72,6 +72,16 @@ SDK
 
 ##### Attaching observers to read data
 
+[Events](https://www.firebase.com/docs/web/guide/retrieving-data.html) can have the value of:
+
+```ruby
+:child_added, :added, FEventTypeChildAdded
+:child_moved, :moved, FEventTypeChildMoved
+:child_changed, :changed, FEventTypeChildChanged
+:child_removed, :removed, FEventTypeChildRemoved
+:value, FEventTypeValue
+```
+
 ```ruby
     handle = firebase.on(event_type) { |snapshot| 'completion block' }
     handle = firebase.on(event_type) { |snapshot, previous_sibling_name| 'completion block' }
