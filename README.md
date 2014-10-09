@@ -260,7 +260,7 @@ Firebase.off_auth(auth_handler)
 ##### Authenticate with previous token
 
 ```ruby
-Firebase.auth(token) do |error, auth_data|
+Firebase.authenticate(token) do |error, auth_data|
 end
 ```
 

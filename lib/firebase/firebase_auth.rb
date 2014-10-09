@@ -10,15 +10,15 @@ class Firebase
   end
 
   # @example
-  #     Firebase.auth('secrettoken') do |error, auth_data|
+  #     Firebase.authenticate('secrettoken') do |error, auth_data|
   #       if auth_data
   #         # authenticated
   #       end
   #     end
-  def self.auth(token, options={}, &block)
+  def self.authenticate(token, options={}, &block)
     Firebase.new.auth(token, options, &block)
   end
-  def auth(token, options={}, &and_then)
+  def authenticate(token, options={}, &and_then)
     and_then ||= options[:completion]
     disconnect_block = options[:disconnect]
     if disconnect || and_then.arity < 2
@@ -51,7 +51,7 @@ class Firebase
   # pass a block, this method returns true or false.
   def authenticated?(&block)
     if block
-      observeAuthEventWithBlock(FEventTypeValue, block)
+      observeAuthEventWithBlock(block)
     else
       !!authData
     end
