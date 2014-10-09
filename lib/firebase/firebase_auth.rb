@@ -16,7 +16,7 @@ class Firebase
   #       end
   #     end
   def self.authenticate(token, options={}, &block)
-    Firebase.new.auth(token, options, &block)
+    Firebase.new.authenticate(token, options, &block)
   end
   def authenticate(token, options={}, &and_then)
     and_then ||= options[:completion]
