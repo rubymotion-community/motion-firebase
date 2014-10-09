@@ -16,4 +16,8 @@ class FDataSnapshot
     end
   end
 
+  def value?
+    to_bool
+  end
+
 end

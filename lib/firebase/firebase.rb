@@ -22,8 +22,41 @@ class Firebase
     return event_type
   end
 
-  def self.new(url)
-    alloc.initWithUrl(url)
+  def self.url=(url)
+    if url.start_with?('http://')
+      raise "Invalid URL #{url.inspect} in #{__method__}: URL scheme should be 'https://', not 'http://'"
+    elsif url.start_with?('https://')
+      # all good
+    elsif url =~ '^\w+://'
+      raise "Invalid URL #{url.inspect} in #{__method__}: URL scheme should be 'https://', not '#{$~}'"
+    else
+      url = "https://#{url}"
+    end
+
+    # should we support `Firebase.url = 'myapp/path/to/child/'` ?  I'm gonna say
+    # NO for now...
+    unless url.include?('.firebaseio.com')
+      if url.include?('/')
+        raise "Invalid URL #{url.inspect} in #{__method__}: URL does not include 'firebaseio.com'"
+      end
+      url = "#{url}.firebaseio.com"
+    end
+
+    @url = url
+  end
+
+  def self.url
+    @url
+  end
+
+  def self.new(url=nil)
+    if url.nil?
+      @shared ||= alloc.initWithUrl(@url)
+    elsif url
+      alloc.initWithUrl(url)
+    else
+      super
+    end
   end
 
   # @example
@@ -36,52 +69,35 @@ class Firebase
     setDispatchQueue(queue)
   end
 
-  # @example
-  #     firebase = Firebase.new('http://..../')
-  #     firebase.auth('secretkey') do
-  #       # connected
-  #     end
-  #     firebase.auth('secretkey', disconnect: ->{}) do
-  #       # connected
-  #     end
-  #     firebase.auth('secretkey', completion: ->{}, disconnect: ->{})
-  #     # => firebase.authWithCredential(credential)
-  def auth(credential, options={}, &and_then)
-    and_then ||= options[:completion]
-    disconnect_block = options[:disconnect]
-    authWithCredential(credential, withCompletionBlock: and_then, withCancelBlock: disconnect_block)
-    return self
+  def connected_state(&block)
+    connected?
   end
 
-  alias_method :old_unauth, :unauth
-
-  def unauth(&block)
-    if block_given?
-      unauthWithCompletionBlock(block)
+  def self.connected?(&block)
+    Firebase.new.connected?(&block)
+  end
+  def connected?(&block)
+    if block
+      connected_state.on(:value) do |snapshot|
+        block.call(snapshot.value?)
+      end
     else
-      old_unauth
+      self.root['.info/connected']
     end
   end
 
-  def auth_state
-    self.root['.info/authenticated']
+  def self.offline!
+    Firebase.new.offline!
   end
-
-  def connected_state
-    self.root['.info/connected']
-  end
-
   def offline!
-    goOffline
+    self.goOffline
   end
 
+  def self.online!
+    Firebase.new.online!
+  end
   def online!
-    goOnline
-  end
-
-  def run(options={}, &transaction)
-    NSLog('The method ‘Firebase#run’ has been deprecated in favor of ‘Firebase#transaction’')
-    self.transaction(options, &transaction)
+    self.goOnline
   end
 
   def transaction(options={}, &transaction)
@@ -199,11 +215,6 @@ class Firebase
       cancelDisconnectOperations
     end
     return self
-  end
-
-  # Calls the block when the value is true
-  def on_auth(options={}, &block)
-    auth_state.on(:value, options, &block)
   end
 
   def on_disconnect(value, &and_then)
