@@ -160,7 +160,7 @@ class TwitterAuthHelper
     if params['oauth_token_secret'] && params['oauth_token']
       params
     else
-      { 'error': account_data }
+      { 'error' => account_data }
     end
   end
 

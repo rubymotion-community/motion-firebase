@@ -27,7 +27,7 @@ class Firebase
       raise "Invalid URL #{url.inspect} in #{__method__}: URL scheme should be 'https://', not 'http://'"
     elsif url.start_with?('https://')
       # all good
-    elsif url =~ '^\w+://'
+    elsif url =~ %r'^\w+://'
       raise "Invalid URL #{url.inspect} in #{__method__}: URL scheme should be 'https://', not '#{$~}'"
     else
       url = "https://#{url}"
@@ -36,9 +36,6 @@ class Firebase
     # should we support `Firebase.url = 'myapp/path/to/child/'` ?  I'm gonna say
     # NO for now...
     unless url.include?('.firebaseio.com')
-      if url.include?('/')
-        raise "Invalid URL #{url.inspect} in #{__method__}: URL does not include 'firebaseio.com'"
-      end
       url = "#{url}.firebaseio.com"
     end
 

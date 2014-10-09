@@ -46,12 +46,12 @@ class Firebase
   def self.authenticated?(&block)
     Firebase.new.authenticated?(&block)
   end
-  # checks the auth status.  If you pass a block the observeAuthEventWithBlock
-  # is used to determine the status.  If you don't pass a block, this method
-  # returns true or false.
+  # checks the authenticated status.  If you pass a block the
+  # observeAuthEventWithBlock is used to determine the status.  If you don't
+  # pass a block, this method returns true or false.
   def authenticated?(&block)
     if block
-      observeAuthEventWithBlock(:value, block)
+      observeAuthEventWithBlock(FEventTypeValue, block)
     else
       !!authData
     end
