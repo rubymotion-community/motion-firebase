@@ -21,7 +21,7 @@ project, the Firebase SDK gets included automatically.
 motion-firebase 3.0
 ========
 
-Lots of changes in this version: <3.0.md>
+Lots of changes in this version: [3.0.md](3.0.md)
 
 # SDK
 
