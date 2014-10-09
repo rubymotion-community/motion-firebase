@@ -13,9 +13,9 @@ describe 'Firebase' do
   describe 'acceptable URLs when setting Firebase.URL' do
     [
       MOTION_FIREBASE_APP,
-      "#{MOTION_FIREBASE_APP}.firebaseio.com",
+      "#{MOTION_FIREBASE_APP}.firebaseio.com/",
       "https://#{MOTION_FIREBASE_APP}",
-      "https://#{MOTION_FIREBASE_APP}.firebaseio.com",
+      "https://#{MOTION_FIREBASE_APP}.firebaseio.com/",
     ].each do |shorthand|
       it "can fix shorthand URL #{shorthand}" do
         Firebase.url = shorthand
