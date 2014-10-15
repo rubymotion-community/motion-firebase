@@ -218,6 +218,10 @@ class Firebase
     return self
   end
 
+  def remove_on_disconnect(&and_then)
+    on_disconnect(nil, &and_then)
+  end
+
   def on_disconnect(value, &and_then)
     if block_given?
       if value.nil?

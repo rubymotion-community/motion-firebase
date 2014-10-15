@@ -107,9 +107,15 @@ handle = firebase.on(event_type,
   completion: proc { |snapshot, previous_sibling_name| 'completion block' },
   disconnect: proc { 'completion block' }
   )
-handle = firebase.once(event_type) { |snapshot| 'completion block' }
-handle = firebase.once(event_type) { |snapshot, previous_sibling_name| 'completion block' }
-handle = firebase.once(event_type,
+```
+
+Sometimes you just need one to get an update, use `once` if you don't want to
+subscribe to a stream of changes.
+
+```ruby
+firebase.once(event_type) { |snapshot| 'completion block' }
+firebase.once(event_type) { |snapshot, previous_sibling_name| 'completion block' }
+firebase.once(event_type,
   completion: proc { |snapshot, previous_sibling_name| 'completion block' },
   disconnect: proc { 'completion block' }
   )
@@ -177,8 +183,13 @@ firebase.on_disconnect(value)  # set the ref to `value` when disconnected
 firebase.on_disconnect(value) { |error| 'completion block' }
 firebase.on_disconnect(value, priority: priority)
 firebase.on_disconnect(value, priority: priority) { |error| 'completion block' }
+
+# this removes the value on disconnect
+firebase.remove_on_disconnect
+# which is the same as, but not as obvious:
 firebase.on_disconnect(nil)
-firebase.on_disconnect(nil) { |error| 'completion block' }
+firebase.remove_on_disconnect { |error| 'completion block' }
+
 firebase.on_disconnect({ child: values })
 firebase.on_disconnect({ child: values }) { |error| 'completion block' }
 
