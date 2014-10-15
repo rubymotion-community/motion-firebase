@@ -21,7 +21,7 @@ class Firebase
   def authenticate(token, options={}, &and_then)
     and_then ||= options[:completion]
     disconnect_block = options[:disconnect]
-    if disconnect || and_then.arity < 2
+    if disconnect_block || and_then.arity < 2
       NSLog('Warning!  The Firebase authWithCredential method is deprecated.')
       NSLog('Instead of using a completion and cancel block, pass one block:')
       NSLog('fb.auth(token) do |error, auth_data| .. end')
