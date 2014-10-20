@@ -60,7 +60,7 @@ class FQuery
     return self
   end
 
-  def start_at(priority)
+  def start_at(priority=nil)
     queryStartingAtPriority(priority)
   end
 
@@ -68,7 +68,7 @@ class FQuery
     queryStartingAtPriority(priority, andChildName: child)
   end
 
-  def equal_to(priority)
+  def equal_to(priority=nil)
     queryEqualToPriority(priority)
   end
 
@@ -76,7 +76,7 @@ class FQuery
     queryEqualToPriority(priority, andChildName: child)
   end
 
-  def end_at(priority)
+  def end_at(priority=nil)
     queryEndingAtPriority(priority)
   end
 
