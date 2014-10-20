@@ -5,8 +5,48 @@ describe 'Firebase' do
     firebase.should.be.kind_of Firebase
   end
 
-  describe 'Firebase instance' do
+  it 'can create a Firebase instance with `new`' do
+    firebase = Firebase.new(MOTION_FIREBASE_SPEC)
+    firebase.should.be.kind_of Firebase
+  end
 
+  describe 'acceptable URLs when setting Firebase.URL' do
+    [
+      MOTION_FIREBASE_APP,
+      "#{MOTION_FIREBASE_APP}.firebaseio.com/",
+      "https://#{MOTION_FIREBASE_APP}",
+      "https://#{MOTION_FIREBASE_APP}.firebaseio.com/",
+    ].each do |shorthand|
+      it "can fix shorthand URL #{shorthand}" do
+        Firebase.url = shorthand
+        Firebase.url.should == MOTION_FIREBASE_SPEC
+      end
+    end
+  end
+
+  describe '**unacceptable** URLs when setting Firebase.URL' do
+    [
+      "#{MOTION_FIREBASE_APP}/bad",     # 'app/bad'  - firebaseio.com missing
+      "http://#{MOTION_FIREBASE_APP}",  # bad schemes
+      "http://#{MOTION_FIREBASE_APP}.firebaseio.com",
+      "ftp://#{MOTION_FIREBASE_APP}.firebaseio.com",
+    ].each do |shorthand|
+      it "should not allow shorthand URL #{shorthand}" do
+        -> do
+          Firebase.url = shorthand
+        end.should.raise
+      end
+    end
+  end
+
+  it 'can create a Firebase instance using default URL' do
+    Firebase.url = MOTION_FIREBASE_SPEC
+    Firebase.url.should == MOTION_FIREBASE_SPEC
+    firebase = Firebase.new
+    firebase.should.be.kind_of Firebase
+  end
+
+  describe 'Firebase methods' do
     before do
       @firebase = Firebase.alloc.initWithUrl(MOTION_FIREBASE_SPEC).childByAppendingPath('specs')
     end
@@ -120,7 +160,7 @@ describe 'Firebase' do
     # def set(value, priority:priority, &and_then)
     # def update(values, &and_then)
     # def cancel_disconnect(&and_then)
-    # def on_auth(options={}, &block)
+    # def authenticated?(options={}, &block)
     # def on_disconnect(value, &and_then)
     # def on_disconnect(value, priority:priority, &and_then)
     # def inspect
@@ -129,12 +169,14 @@ describe 'Firebase' do
     # def off(handle=nil)
     # def start_at(priority)
     # def start_at(priority, child:child)
+    # def equal_to(priority)
+    # def equal_to(priority, child:child)
     # def end_at(priority)
     # def end_at(priority, child:child)
 
-    # def run(options={}, &transaction)
-    # def auth(credential, options={}, &and_then)
-    # def auth_state
+    # def transaction(options={}, &transaction)
+    # def auth(token, &and_then)
+    # def logout(&and_then)
 
   end
 

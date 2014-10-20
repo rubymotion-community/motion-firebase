@@ -7,269 +7,408 @@ Adds more rubyesque methods to the built-in classes.
 
 For a Ruby (MRI) Firebase wrapper, check out <https://github.com/derailed/bigbertha>.
 
-Versioning
--------
+Installation
+============
 
-Versioning matches Firebase's SDK major and minor version numbers, but revision
-numbers could be different.
+The **motion-firebase** gem ships with "freeze dried" copies of the Firebase
+framework.  This way we can guarantee that the version of **motion-firebase** is
+*definitely* compatible with the version of Firebase that is included.  As new
+features get announced, we update the gem.
 
-SDK
----
+Also, it means that installation is easy!  When you compile your RubyMotion
+project, the Firebase SDK gets included automatically.
 
-# Firebase Class Reference
+motion-firebase 3.0
+========
+
+Lots of changes in this version: [3.0.md](3.0.md)
+
+# SDK
 
 ##### Initializing a Firebase object
 
 ```ruby
-    Firebase.new(url)
+Firebase.new(url)
+
+# it's common to set a global firebase URL.  Set it in your app delegate,
+# and calling `new` will use that default URL.
+Firebase.url = 'https://your-app.firebaseio.com'
+Firebase.url  # => 'https://your-app.firebaseio.com'
+Firebase.new
+
+# these all work, too:
+Firebase.url = 'your-app.firebaseio.com'
+Firebase.url = 'your-app'
+Firebase.url  # => 'https://your-app.firebaseio.com'
 ```
 
 ##### Getting references to children locations
 
 ```ruby
-    firebase[path]
-    firebase[]  # childByAutoId
-    firebase['fred']  # childByAppendingPath('fred')
+firebase[path]
+firebase[]  # childByAutoId
+firebase['fred']  # childByAppendingPath('fred')
 ```
 
 ##### Writing data
 
 ```ruby
-    firebase << { key: 'value' }
-    # => firebase.childByAutoId.setValue({ key: 'value'}), returns the new child
+firebase << { key: 'value' }
+# => firebase.childByAutoId.setValue({ key: 'value'}), returns the new child
 
-    # Since firebase works with simple objects, this is equivalent to
-    # => firebase.childByAutoId.setValue({ 'key' => 'value'})
+# Since firebase works with simple objects, this is equivalent to
+# => firebase.childByAutoId.setValue({ 'key' => 'value'})
 
-    # set value
-    firebase.value = value
-    firebase.set(value)
-    firebase.set(value) { 'completion block' }
-    firebase.set(value, priority: priority)
-    firebase.set(value, priority: priority) { 'completion block' }
+# set value
+firebase.value = value
+firebase.set(value)
+firebase.set(value) { 'completion block' }
+firebase.set(value, priority: priority)
+firebase.set(value, priority: priority) { 'completion block' }
 
-    # set value of child node
-    firebase['first_name'] = 'fred'  # childByAppendingPath('fred').set('fred')
+# set value of child node
+firebase['first_name'] = 'fred'  # childByAppendingPath('fred').set('fred')
 
-    # remove value
-    firebase.clear!
-    firebase.clear! { 'completion block' }
+# remove value
+firebase.clear!
+firebase.clear! { 'completion block' }
 
-    # priority
-    firebase.priority = priority
-    firebase.priority(priority)
-    firebase.priority(priority) { |error| 'completion block' }
+# priority
+firebase.priority = priority
+firebase.priority(priority)
+firebase.priority(priority) { |error| 'completion block' }
 
-    # "updating" is used to update some children, but leaving others unchanged.
-    # (set, on the other hand, replaces the value entirely, so using set with a
-    # hash will remove keys that weren't specified in the new hash)
-    firebase.set({ first_name: 'motion', last_name: 'fireball' })
-    firebase.update(last_name: 'firebase')  # only updates last_name, first_name is left unchanged
-    firebase.update(last_name: 'firebase') { |error| 'completion block' }
-    # for comparison:
-    firebase.set(last_name: 'firebase')  # first_name is now 'nil'
+# "updating" is used to update some children, but leaving others unchanged.
+# (set, on the other hand, replaces the value entirely, so using set with a
+# hash will remove keys that weren't specified in the new hash)
+firebase.set({ first_name: 'motion', last_name: 'fireball' })
+firebase.update(last_name: 'firebase')  # only updates last_name, first_name is left unchanged
+firebase.update(last_name: 'firebase') { |error| 'completion block' }
+# for comparison:
+firebase.set(last_name: 'firebase')  # first_name is now 'nil'
 ```
 
 ##### Attaching observers to read data
 
+[Events](https://www.firebase.com/docs/web/guide/retrieving-data.html) can have the value of:
+
 ```ruby
-    handle = firebase.on(event_type) { |snapshot| 'completion block' }
-    handle = firebase.on(event_type) { |snapshot, previous_sibling_name| 'completion block' }
-    handle = firebase.on(event_type,
-      completion: proc { |snapshot, previous_sibling_name| 'completion block' },
-      disconnect: proc { 'completion block' }
-      )
-    handle = firebase.once(event_type) { |snapshot| 'completion block' }
-    handle = firebase.once(event_type) { |snapshot, previous_sibling_name| 'completion block' }
-    handle = firebase.once(event_type,
-      completion: proc { |snapshot, previous_sibling_name| 'completion block' },
-      disconnect: proc { 'completion block' }
-      )
+:child_added, :added, FEventTypeChildAdded
+:child_moved, :moved, FEventTypeChildMoved
+:child_changed, :changed, FEventTypeChildChanged
+:child_removed, :removed, FEventTypeChildRemoved
+:value, FEventTypeValue
+```
+
+```ruby
+handle = firebase.on(event_type) { |snapshot| 'completion block' }
+handle = firebase.on(event_type) { |snapshot, previous_sibling_name| 'completion block' }
+handle = firebase.on(event_type,
+  completion: proc { |snapshot, previous_sibling_name| 'completion block' },
+  disconnect: proc { 'completion block' }
+  )
+```
+
+Sometimes you just need one to get an update, use `once` if you don't want to
+subscribe to a stream of changes.
+
+```ruby
+firebase.once(event_type) { |snapshot| 'completion block' }
+firebase.once(event_type) { |snapshot, previous_sibling_name| 'completion block' }
+firebase.once(event_type,
+  completion: proc { |snapshot, previous_sibling_name| 'completion block' },
+  disconnect: proc { 'completion block' }
+  )
 ```
 
 ##### Detaching observers
 
 ```ruby
-    firebase.off
-    # => firebase.removeAllObservers
+firebase.off
+# => firebase.removeAllObservers
 
-    firebase.off(handle)
-    # => firebase.removeObserverWithHandle(handle)
+firebase.off(handle)
+# => firebase.removeObserverWithHandle(handle)
 ```
 
 ##### Priority and Limiting
 ###### similar-to-yet-different-than "ORDER BY" and "LIMIT"
 
 ```ruby
-    firebase.start_at(priority)
-    # => firebase.queryStartingAtPriority(priority)
+firebase.start_at(priority)
+# => firebase.queryStartingAtPriority(priority)
 
-    firebase.start_at(priority, child: child_name)
-    # => firebase.queryStartingAtPriority(priority, andChildName: child_name)
+firebase.start_at(priority, child: child_name)
+# => firebase.queryStartingAtPriority(priority, andChildName: child_name)
 
-    firebase.end_at(priority)
-    # => firebase.queryEndingAtPriority(priority)
+firebase.equal_to(priority)
+# => firebase.queryEqualToPriority(priority)
 
-    firebase.end_at(priority, child: child_name)
-    # => firebase.queryEndingAtPriority(priority, andChildName: child_name)
+firebase.equal_to(priority, child: child_name)
+# => firebase.queryEqualToPriority(priority, andChildName: child_name)
 
-    firebase.limit(limit)
-    # => firebase.queryLimitedToNumberOfChildren(limit)
+firebase.end_at(priority)
+# => firebase.queryEndingAtPriority(priority)
+
+firebase.end_at(priority, child: child_name)
+# => firebase.queryEndingAtPriority(priority, andChildName: child_name)
+
+firebase.limit(limit)
+# => firebase.queryLimitedToNumberOfChildren(limit)
 ```
 
 ##### Managing presence
 
-```ruby
-    firebase.online!
-    firebase.offline!
-    firebase.connected_state  # returns a Firebase ref that changes value depending on connectivity
-    firebase.on_disconnect(value)  # set the ref to `value` when disconnected
-    firebase.on_disconnect(value) { |error| 'completion block' }
-    firebase.on_disconnect(value, priority: priority)
-    firebase.on_disconnect(value, priority: priority) { |error| 'completion block' }
-    firebase.on_disconnect(nil)
-    firebase.on_disconnect(nil) { |error| 'completion block' }
-    firebase.on_disconnect({ child: values })
-    firebase.on_disconnect({ child: values }) { |error| 'completion block' }
-    firebase.cancel_disconnect
-    firebase.cancel_disconnect { |error| 'completion block' }
-```
-
-##### Authenticating
+SOO COOL!  Play with these, you can *easily* create a presence system for your
+real-time app or game.
 
 ```ruby
-    firebase.auth(secret_key)
-    firebase.auth(secret_key) { |error, data| 'completion block' }
-    firebase.auth(secret_key,
-      completion: proc { |error, data| 'completion block' },
-      disconnect: proc { |error| 'completion block', },
-      )
-    # calls `unauth`, or if you pass a block calls `unauthWithCompletionBlock`
-    firebase.unauth
-    firebase.unauth do |error|
-      # ...
-    end
-    # when using FirebaseSimpleLogin to authenticate, this child node should be
-    # monitored for changes
-    firebase.auth_state
-    # usually you'll want to monitor its value, so this is a helper for that:
-    handle = firebase.on_auth do |snapshot|
-    end
-    # be a good citizen and turn off the listener later!
-    firebase.off(handle)
+Firebase.online!
+Firebase.offline!
+Firebase.connected?  # returns a Firebase ref that changes value depending on connectivity
+
+# or you can pass in a block, this block will be called with the connected
+# state as a bool:
+handler = Firebase.connected? do |connected|
+  if connected
+    # so awesome
+  end
+end
+# you should turn it off when you're done, otherwise you'll have a memory leak
+Firebase.off(handler)
+
+# so what you do is get a ref to the authenticated user's "presence" value.
+# Then, on_disconnect, set the value to 'false'.
+firebase.on_disconnect(value)  # set the ref to `value` when disconnected
+firebase.on_disconnect(value) { |error| 'completion block' }
+firebase.on_disconnect(value, priority: priority)
+firebase.on_disconnect(value, priority: priority) { |error| 'completion block' }
+
+# this removes the value on disconnect
+firebase.remove_on_disconnect
+# which is the same as, but not as obvious:
+firebase.on_disconnect(nil)
+firebase.remove_on_disconnect { |error| 'completion block' }
+
+firebase.on_disconnect({ child: values })
+firebase.on_disconnect({ child: values }) { |error| 'completion block' }
+
+# sometimes you need to cancel these 'on_disconnect' operations
+firebase.cancel_disconnect
+firebase.cancel_disconnect { |error| 'completion block' }
 ```
 
 ##### Transactions
 
 ```ruby
-    firebase.transaction do |data|
-      current_value = data.value
-      current_value += 1
-      FTransactionResult.successWithValue(current_value)
-    end
-    firebase.transaction(local: false) do |data|
-      #...
-    end
-    firebase.transaction(
-      completion: proc { |error, committed, snapshot| }
-      ) do |data|
-      current_value = data.value
-      current_value += 1
-      FTransactionResult.successWithValue(current_value)
-    end
-    firebase.transaction(
-      transaction: proc { |data| 'transaction block' },
-      completion: proc { |error, committed, snapshot| }
-      local: true || false,
-      )
+firebase.transaction do |data|
+  current_value = data.value
+  current_value += 1
+  FTransactionResult.successWithValue(current_value)
+end
+firebase.transaction(local: false) do |data|
+  #...
+end
+firebase.transaction(
+  completion: proc { |error, committed, snapshot| }
+  ) do |data|
+  current_value = data.value
+  current_value += 1
+  FTransactionResult.successWithValue(current_value)
+end
+firebase.transaction(
+  transaction: proc { |data| 'transaction block' },
+  completion: proc { |error, committed, snapshot| }
+  local: true || false,
+  )
 ```
 
 ##### Retrieving String Representation
 
 ```ruby
-    firebase.to_s
-    firebase.inspect
+firebase.to_s
+firebase.inspect
 ```
 
 ##### Properties
 
 ```ruby
-    firebase.parent
-    firebase.root
-    firebase.name
+firebase.parent
+firebase.root
+firebase.name
 ```
 
 ##### Global configuration and settings
 
 ```ruby
-    Firebase.dispatch_queue=(queue)
-    Firebase.sdkVersion
+Firebase.dispatch_queue=(queue)
+Firebase.sdkVersion
+Motion::Firebase::SdkVersion  # this string is more human readable than sdkVersion
 ```
 
-# FirebaseSimpleLogin Class Reference
 
-    require 'motion-firebase-auth'
+# Firebase Authentication Reference
 
-##### Initializing a FirebaseSimpleLogin instance
-
-```ruby
-    ref = Firebase.new(url)
-    auth = FirebaseSimpleLogin.new(ref)
-```
+Most of the authentication methods can be called statically as long as you have
+set a default `Firebase.url`
 
 ##### Checking current authentication status
 
 ```ruby
-    auth.check { |error, user| }
+Firebase.authenticated?  # => true/false
+# you pretty much always need to hold a reference to the "handler"
+auth_handler = Firebase.authenticated? do |auth_data|
+  if auth_data
+    # authenticated!
+  else
+    # not so much
+  end
+end
+# turn off the handler, otherwise, yeah, memory leaks.
+Firebase.off_auth(auth_handler)
+```
+
+##### Authenticate with previous token
+
+```ruby
+Firebase.authenticate(token) do |error, auth_data|
+end
 ```
 
 ##### Removing any existing authentication
 
 ```ruby
-    auth.logout
+Firebase.logout
 ```
 
-##### Email/password authentication methods
+## Email/password authentication methods
 
-`credentials` for `create,remove,login` should include `:email` and `:password`.
-For `update`, `credentials` should include `:email`, `:old_password` and
-`:new_password`.
+This is the most common way to login.  It allows Firebase to create users and
+tokens.
 
 ```ruby
-    auth.create(email: 'hello@example.com', password: '12345') { |error, user| }
-    auth.remove(email: 'hello@example.com', password: '12345') { |error, user| }
-    auth.login(email: 'hello@example.com', password: '12345') { |error, user| }
-    auth.update(email: 'hello@example.com', old_password: '12345', new_password: '54321') { |error, success| }
+Firebase.create_user(email: 'hello@example.com', password: '12345') { |error, auth_data| }
+Firebase.remove_user(email: 'hello@example.com', password: '12345') { |error, auth_data| }
+Firebase.login(email: 'hello@example.com', password: '12345') { |error, auth_data| }
+Firebase.login_anonymously { |error, auth_data| }
+Firebase.update_user(email: 'hello@example.com', old_password: '12345', new_password: '54321') { |error, success| }
+
+auth_data.uid # is a globally unique user identifier
+auth_data.token # can be stored (in a keychain!) to authenticate the same user again later
 ```
 
-##### Facebook authentication methods
+See <https://www.firebase.com/docs/ios/api/#fauthdata_properties> for other
+`auth_data` properties.
 
-`credentials` must include `:app_id`. `:permissions` defaults to `['email']` and
-`:audience` defaults to `ACFacebookAudienceOnlyMe`.
+
+## Other authentication providers
+
+##### Facebook authentication
+
+This Facebook helper is a port of the Objective-C code from
+<https://www.firebase.com/docs/ios/guide/login/facebook.html>.
 
 ```ruby
-    auth.login_to_facebook(app_id: '123abc') { |error, user| }
+Firebase.open_facebook_session(
+    permissions: ['public_profile'],  # these are the default values.  if
+    allow_login_ui: true,             # you're OK with them, they are
+    ) do |error, auth_data|           # optional, so just provide a block.
+end
 ```
 
-##### Twitter authentication methods
+##### Twitter authentication
 
-`credentials` should include `:app_id` and `:on_multiple` block. The
-`:on_multiple` block is called when more than one account is found.  It is
-passed an array of usernames and should return an index or `NSNotFound`.
+This Twitter helper is a port of the Objective-C code from
+<https://www.firebase.com/docs/ios/guide/login/twitter.html>.  You should read
+that page to see how Firebase recommends handling multiple accounts.  It's a
+little streamlined here, since `open_twitter_session` returns a block that you
+can call with the chosen account.
 
 ```ruby
-    auth.login_to_twitter(app_id: '123abc', on_multiple: ->(usernames) { return 0 }) { |error, user| }
+# it's nice to be able to set-and-forget the twitter_api_key (in your
+# application delegate, for example)
+Firebase.twitter_api_key = 'your key!'
+
+# You must set Firebase.url=, or call open_twitter_session on an existing
+# Firebase ref.  The first step is to get the Twitter accounts on this
+# device.  Even if there is just one, you need to "choose" it here. Also,
+# you can pass the twitter api_key as an option, otherwise this method will
+# use Firebase.twitter_api_key
+Firebase.open_twitter_session(api_key: 'your key!') do |error, accounts, next_step|
+  # next_step is a block you call with the chosen twitter account and a
+  # firebase handler for the authentication success or failure
+  if error
+    # obviously do some stuff here
+  else
+    present_twitter_chooser(accounts, next_step) do |error, auth_data|
+      # this block is passed to next_step in present_twitter_chooser
+      if error
+        # bummer
+      else
+        # awesome!
+      end
+    end
+  else
+end
+
+def present_twitter_chooser(accounts, next_step, &firebase_handler)
+  if accounts.length == 1
+    next_step.call(accounts[0], &firebase_handler)
+  else
+    # present a controller or action sheet or something like that
+    ... awesome twitter account chooser code ...
+    next_step.call(account, &firebase_handler)
+  end
+end
 ```
 
-##### Global configuration and settings
+##### Github authentication
+
+Firebase doesn't provide much help on this one.  I'm not even sure *how* to get
+a github access token from the user... but anyway here's the `motion-firebase`
+code based on <https://www.firebase.com/docs/ios/guide/login/github.html>.
 
 ```ruby
-    FirebaseSimpleLogin.sdkVersion
+Firebase.github_token = 'github oauth token'
+Firebase.open_github_session do |error, auth_data|
+end
 ```
 
-##### Retrieving String Representation
+##### Google authentication
+
+This process is more involved, and relies on the GooglePlus framework.  I didn't
+take the time to port the code this time, but I hope someone does someday! 😄
+
+You can read Firebase's instructions here: <https://www.firebase.com/docs/ios/guide/login/google.html>
 
 ```ruby
-    firebase.to_s
-    firebase.inspect
+Firebase.google_token = 'google oauth token'
+Firebase.open_google_session do |error, auth_data|
+end
+```
+
+##### Generic OAuth Authentication
+
+Usually you will use the helpers from above, but here are some lower level
+methods:
+
+```ruby
+# using a token
+firebase_ref.login_to_oauth(provider, token: token) do |error, auth_data| .. end
+firebase_ref.login_to_oauth(provider, token) do |error, auth_data| .. end
+
+# using parameters
+firebase_ref.login_to_oauth(provider, oauth_token: token, oauth_token_secret: secret) do |error, auth_data| .. end
+params = { ... }
+firebase_ref.login_to_oauth(provider, params) do |error, auth_data| .. end
+
+# which is a wrapper for these SDK methods:
+firebase_ref.authWithOAuthProvider(provider, token: token, withCompletionBlock: block)
+firebase_ref.authWithOAuthProvider(provider, parameters: params, withCompletionBlock: block)
+
+# Again, the `open_*_session` methods are even more convenient.
+firebase_ref.login_to_facebook(facebook_access_token, &block)
+firebase_ref.login_to_twitter(token: token, secret: secret, &block)
+firebase_ref.login_to_github(github_oauth_token, &block)
+firebase_ref.login_to_google(google_oauth_token, &block)
 ```

@@ -48,6 +48,9 @@ class FQuery
     end
   end
 
+  def self.off(handle=nil)
+    Firebase.new.off(handle)
+  end
   def off(handle=nil)
     if handle
       removeObserverWithHandle(handle)
@@ -61,19 +64,28 @@ class FQuery
     queryStartingAtPriority(priority)
   end
 
-  def start_at(priority=nil, child:child)
-    queryStartingAtPriority(priority, andChildName:child)
+  def start_at(priority, child: child)
+    queryStartingAtPriority(priority, andChildName: child)
+  end
+
+  def equal_to(priority=nil)
+    queryEqualToPriority(priority)
+  end
+
+  def equal_to(priority, child: child)
+    queryEqualToPriority(priority, andChildName: child)
   end
 
   def end_at(priority=nil)
     queryEndingAtPriority(priority)
   end
 
-  def end_at(priority=nil, child:child)
-    queryEndingAtPriority(priority, andChildName:child)
+  def end_at(priority, child: child)
+    queryEndingAtPriority(priority, andChildName: child)
   end
 
   def limit(limit)
     queryLimitedToNumberOfChildren(limit)
   end
+
 end

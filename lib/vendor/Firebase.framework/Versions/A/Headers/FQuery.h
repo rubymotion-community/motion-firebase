@@ -218,6 +218,30 @@ typedef NSUInteger FirebaseHandle;
 
 
 /**
+* queryEqualToPriority: is used to generate a reference to a limited view of the data at this location.
+* The FQuery instance returned by queryEqualToPriority: will respond to events at nodes with a priority equal to
+* supplied argument.
+*
+* @param priority The priority that the data returned by this FQuery will have
+* @return An Fquery instance, limited to data with the supplied priority.
+*/
+- (FQuery *) queryEqualToPriority:(id)priority;
+
+
+/**
+* queryEqualToPriority:andChildName: is used to generate a reference to a limited view of the data at this location.
+* The FQuery instance returned by queryEqualToPriority:andChildNAme will respond to events at nodes with a priority
+* equal to the supplied argument with a name equal to childName. There will be at most one node that matches because
+* child names are unique.
+*
+* @param priority The priority that the data returned by this FQuery will have
+* @param childName The name of nodes with the right priority
+* @return An FQuery instance, limited to data with the supplied priority and the name.
+*/
+- (FQuery *) queryEqualToPriority:(id)priority andChildName:(NSString *)childName;
+
+
+/**
  * queryLimitedToNumberOfChildren: is used to generate a reference to a limited view of the data at this location.
  * The FQuery instance returned by queryLimitedToNumberOfChildren: will respond to events at from at most limit child nodes
  *
