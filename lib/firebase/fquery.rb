@@ -1,5 +1,10 @@
 class FQuery
 
+  # previously the 'key' method was called 'name'
+  def name
+    self.key
+  end
+
   def on(event_type, options={}, &and_then)
     and_then = and_then || options[:completion]
     raise "event handler is required" unless and_then
@@ -86,6 +91,50 @@ class FQuery
 
   def limit(limit)
     queryLimitedToNumberOfChildren(limit)
+  end
+
+  def query(options={})
+    fb_query = self
+
+    if options[:order_by_key]
+      fb_query = fb_query.queryOrderedByKey
+    end
+
+    if options[:order_by_priority]
+      fb_query = fb_query.queryOrderedByPriority
+    end
+
+    if options[:order_by]
+      fb_query = fb_query.queryOrderedByChild(options[:order_by])
+    end
+
+    if options[:first]
+      fb_query = fb_query.queryLimitedToFirst(options[:first])
+    end
+
+    if options[:last]
+      fb_query = fb_query.queryLimitedToLast(options[:last])
+    end
+
+    if options[:starting_at] && options[:key]
+      fb_query = fb_query.queryStartingAtValue(options[:starting_at], childKey: options[:key])
+    elsif options[:starting_at]
+      fb_query = fb_query.queryStartingAtValue(options[:starting_at])
+    end
+
+    if options[:ending_at] && options[:key]
+      fb_query = fb_query.queryEndingAtValue(options[:ending_at], childKey: options[:key])
+    elsif options[:ending_at]
+      fb_query = fb_query.queryEndingAtValue(options[:ending_at])
+    end
+
+    if options[:equal_to] && options[:key]
+      fb_query = fb_query.queryEqualToValue(options[:equal_to], childKey: options[:key])
+    elsif options[:equal_to]
+      fb_query = fb_query.queryEqualToValue(options[:equal_to])
+    end
+
+    fb_query
   end
 
 end

@@ -131,9 +131,9 @@
 
 
 /**
- * @return The name of this node, or nil if it is the top-most location
+ * @return The key name of this node, or nil if it is the top-most location
  */
-@property (readonly, nonatomic, strong) NSString* name;
+@property (readonly, nonatomic, strong) NSString* key;
 
 
 @end

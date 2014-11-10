@@ -19,9 +19,14 @@
 @interface FAuthData : NSObject
 
 /**
-* @return Raw authentication data returned by the server
+* @return Raw authentication token payload returned by the server
 */
 @property (nonatomic, strong, readonly) NSDictionary *auth;
+
+/**
+ * @return Authentication token expiration timestamp (seconds since epoch) returned by the server
+ */
+@property (nonatomic, strong, readonly) NSNumber *expires;
 
 /**
 * @return A uid for this user. It is unique across all auth providers.

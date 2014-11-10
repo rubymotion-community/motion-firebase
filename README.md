@@ -157,6 +157,52 @@ firebase.limit(limit)
 # => firebase.queryLimitedToNumberOfChildren(limit)
 ```
 
+##### Querying
+
+```ruby
+firebase.query(order_by_key: true)
+# => firebase.queryOrderedByKey
+
+firebase.query(order_by_priority: true)
+# => firebase.queryOrderedByPriority
+
+firebase.query(order_by: 'key')
+# => firebase.queryOrderedByChild('key')
+
+firebase.query(first: value)
+# => firebase.queryLimitedToFirst(value)
+
+firebase.query(last: value)
+# => firebase.queryLimitedToLast(value)
+
+firebase.query(starting_at: value)
+firebase.query(starting_at: value, child: 'key')
+# => firebase.queryStartingAtValue(value)
+# => firebase.queryStartingAtValue(value, childKey: 'key')
+
+firebase.query(ending_at: value)
+firebase.query(ending_at: value, child: 'key')
+# => firebase.queryEndingAtValue(value)
+# => firebase.queryEndingAtValue(value, childKey: 'key')
+
+firebase.query(equal_to: value)
+firebase.query(equal_to: value, child: 'key')
+# => firebase.queryEqualToValue(value)
+# => firebase.queryEqualToValue(value, childKey: 'key')
+
+# and of course these can all be combined into one call:
+firebase.query(
+  first: 5,  # last: 6,
+  starting_at: 'foo',
+  ending_at: 'bar')
+
+# => firebase.queryLimitedToFirst(5)
+#            .queryLimitedToLast(6)
+#            .queryStartingAtValue('foo')
+#            .queryEndingAtValue('bar')
+
+```
+
 ##### Managing presence
 
 SOO COOL!  Play with these, you can *easily* create a presence system for your

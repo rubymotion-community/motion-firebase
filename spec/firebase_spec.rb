@@ -69,14 +69,19 @@ describe 'Firebase' do
     it 'should access a child node with []' do
       child = @firebase['child']
       child.should.be.kind_of Firebase
-      child.name.should == 'child'
+      child.key.should == 'child'
+    end
+
+    it 'should allow `name` to return the same value as `key`' do
+      child = @firebase.childByAppendingPath("any-child-name-#{(rand*255).round.to_s(16)}")
+      child.name.should == child.key
     end
 
     it 'should append child names with multiple arguments to []' do
       child = @firebase['child', '1']
       child.should.be.kind_of Firebase
-      child.name.should == '1'
-      child.parent.name.should == 'child'
+      child.key.should == '1'
+      child.parent.key.should == 'child'
     end
 
     describe 'should assign values using []=' do
