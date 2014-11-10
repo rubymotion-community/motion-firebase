@@ -93,7 +93,7 @@ class FQuery
     queryLimitedToNumberOfChildren(limit)
   end
 
-  def query(options={})
+  def query(options={}, &block)
     fb_query = self
 
     if options[:order_by_key]
@@ -134,7 +134,13 @@ class FQuery
       fb_query = fb_query.queryEqualToValue(options[:equal_to])
     end
 
-    fb_query
+    if block
+      event_type = options.fetch(:on, FEventTypeValue)
+      event_type = Firebase.convert_event_type(event_type)
+      return fb_query.observeEventType(event_type, withBlock: and_then)
+    else
+      fb_query
+    end
   end
 
 end

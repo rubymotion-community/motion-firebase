@@ -159,18 +159,20 @@ firebase.limit(limit)
 
 ##### Querying
 
+These methods were added to Firebase in version 2.0.1.  NB: You can provide a
+block and `on: event` value to create a listener.
+
 ```ruby
-firebase.query(order_by_key: true)
-# => firebase.queryOrderedByKey
-
-firebase.query(order_by_priority: true)
-# => firebase.queryOrderedByPriority
-
 firebase.query(order_by: 'key')
 # => firebase.queryOrderedByChild('key')
 
 firebase.query(first: value)
 # => firebase.queryLimitedToFirst(value)
+
+# create a listener by providing a block and :on value (default is :value if :on
+# isn't specified)
+firebase.query(first: value, on: :added) do |snapshot|
+end
 
 firebase.query(last: value)
 # => firebase.queryLimitedToLast(value)
@@ -190,14 +192,19 @@ firebase.query(equal_to: value, child: 'key')
 # => firebase.queryEqualToValue(value)
 # => firebase.queryEqualToValue(value, childKey: 'key')
 
+firebase.query(order_by_key: true)
+# => firebase.queryOrderedByKey
+
+firebase.query(order_by_priority: true)
+# => firebase.queryOrderedByPriority
+
 # and of course these can all be combined into one call:
 firebase.query(
-  first: 5,  # last: 6,
+  first: 5,
   starting_at: 'foo',
   ending_at: 'bar')
 
 # => firebase.queryLimitedToFirst(5)
-#            .queryLimitedToLast(6)
 #            .queryStartingAtValue('foo')
 #            .queryEndingAtValue('bar')
 
