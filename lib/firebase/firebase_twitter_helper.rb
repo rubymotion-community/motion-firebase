@@ -109,7 +109,7 @@ class TwitterAuthHelper
   def create_credential_request_with_reverse_auth_payload(json)
     params = {}
 
-    request_token = json['auth']
+    request_token = json['oauth']
     params['x_reverse_auth_parameters'] = request_token
     params['x_reverse_auth_target'] = @api_key
 
