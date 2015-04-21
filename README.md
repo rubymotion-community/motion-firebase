@@ -59,6 +59,12 @@ firebase << { key: 'value' }
 # Since firebase works with simple objects, this is equivalent to
 # => firebase.childByAutoId.setValue({ 'key' => 'value'})
 
+# if you want to listen for the completion handler
+firebase.push({ key: 'value' }) do |error, ref|
+end
+# => firebase.childByAutoId.setValue({ 'key' => 'value'}, withCompletionBlock: -> (error, ref) do
+# end)
+
 # set value
 firebase.value = value
 firebase.set(value)
