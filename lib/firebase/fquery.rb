@@ -53,9 +53,6 @@ class FQuery
     end
   end
 
-  def self.off(handle=nil)
-    Firebase.new.off(handle)
-  end
   def off(handle=nil)
     if handle
       removeObserverWithHandle(handle)
