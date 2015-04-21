@@ -308,6 +308,15 @@ typedef NSUInteger FirebaseHandle;
 - (FQuery *) queryOrderedByKey;
 
 /**
+ * queryOrderedByValue: is used to generate a reference to a view of the data that's been sorted by child value.
+ * This method is intended to be used in combination with queryStartingAtValue:, queryEndingAtValue:,
+ * or queryEqualToValue:.
+ *
+ * @return An FQuery instance, ordered by child value.
+ */
+- (FQuery *) queryOrderedByValue;
+
+/**
  * queryOrderedByPriority: is used to generate a reference to a view of the data that's been sorted by child
  * priority. This method is intended to be used in combination with queryStartingAtValue:, queryEndingAtValue:,
  * or queryEqualToValue:.
@@ -379,5 +388,16 @@ typedef NSUInteger FirebaseHandle;
  * @return An FQuery instance, limited to data with the supplied value and the key.
  */
 - (FQuery *) queryEqualToValue:(id)value childKey:(NSString *)childKey;
+
+
+/** @name Properties */
+
+
+/**
+* Get a Firebase reference for the location that this data came from
+*
+* @return A Firebase instance for the location of this data
+*/
+@property (nonatomic, readonly, strong) Firebase* ref;
 
 @end

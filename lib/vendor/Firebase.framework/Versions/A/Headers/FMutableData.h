@@ -80,9 +80,11 @@
 
 
 /**
+ * This method is deprecated.
+ *
  * @return An FMutableData instance containing the data at the parent location, or nil if this is the top-most location
  */
-@property (strong, readonly, nonatomic) FMutableData* parent;
+@property (strong, readonly, nonatomic) FMutableData* parent __attribute__((deprecated("Deprecated. Do not use.")));;
 
 
 /**

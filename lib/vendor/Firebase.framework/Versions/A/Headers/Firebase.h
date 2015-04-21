@@ -34,6 +34,7 @@
 #import "FTransactionResult.h"
 #import "FAuthData.h"
 #import "FAuthType.h"
+#import "FirebaseServerValue.h"
 
 /**
  * A Firebase reference represents a particular location in your Firebase
@@ -732,8 +733,19 @@ Supported events types for all realtime observers are specified in FEventType as
 * @param email The email for the account to be created
 * @param password The password for the account to be created
 * @param block The block to be called with the results of the operation
-*/- (void) createUser:(NSString *)email password:(NSString *)password withCompletionBlock:(void (^)(NSError *error))block;
+*/
+- (void) createUser:(NSString *)email password:(NSString *)password withCompletionBlock:(void (^)(NSError *error))block;
 
+/**
+ * Used to create a new user account with the given email and password combo. The results will be passed
+ * to the given block. Note that this method will not log the new user in. On success, invokes the result
+ * block with an dictionary of user data, including the user id.
+ *
+ * @param email The email for the account to be created
+ * @param password The password for the account to be created
+ * @param block The block to be called with the results of the operation
+ */
+- (void) createUser:(NSString *)email password:(NSString *)password withValueCompletionBlock:(void (^)(NSError *error, NSDictionary *result))block;
 
 /**
 * Remove a user account with the given email and password.
@@ -754,6 +766,17 @@ Supported events types for all realtime observers are specified in FEventType as
 * @param block A block to receive the results of the operation
 */
 - (void) changePasswordForUser:(NSString *)email fromOld:(NSString *)oldPassword toNew:(NSString *)newPassword withCompletionBlock:(void (^)(NSError *error))block;
+
+
+/**
+ * Attempts to change the email for the account with the given credentials to the new email given. Results are reported to the supplied block.
+ *
+ * @param email The email for the account to be changed
+ * @param password The password for the account to be changed
+ * @param newEmail The desired newEmail for the account
+ * @param block A block to receive the results of the operation
+ */
+- (void) changeEmailForUser:(NSString *)email password:(NSString *)password toNewEmail:(NSString *)newEmail withCompletionBlock:(void (^)(NSError *error))block;
 
 
 /**
