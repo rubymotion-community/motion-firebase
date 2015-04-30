@@ -80,6 +80,62 @@ describe 'Firebase' do
       child.parent.key.should == 'child'
     end
 
+    describe 'stopping handlers with "off"' do
+      before do
+        @firebase_off = @firebase['off']
+        @firebase_off.value = nil
+      end
+
+      it 'should stop responding after calling "off" with a handle' do
+        @value1 = nil
+        @value2 = nil
+        handler1 = @firebase_off.on(:value) do |snapshot|
+          @value1 = snapshot.value
+        end
+        handler2 = @firebase_off.on(:value) do |snapshot|
+          @value2 = snapshot.value
+        end
+        @firebase_off.value = 'off'
+
+        wait(0.1) do
+          @value1.should == 'off'
+          @value2.should == 'off'
+          @firebase_off.off(handler1)
+
+          @firebase_off.value = 'on!'
+          wait(0.1) do
+            @value1.should == 'off'
+            @value2.should == 'on!'
+          end
+        end
+      end
+
+      it 'should stop all callbacks after calling "off"' do
+        @value1 = nil
+        @value2 = nil
+        handler1 = @firebase_off.on(:value) do |snapshot|
+          @value1 = snapshot.value
+        end
+        handler2 = @firebase_off.on(:value) do |snapshot|
+          @value2 = snapshot.value
+        end
+        @firebase_off.value = 'off'
+
+        wait(0.1) do
+          @value1.should == 'off'
+          @value2.should == 'off'
+          @firebase_off.off
+
+          @firebase_off.value = 'on!'
+          wait(0.1) do
+            @value1.should == 'off'
+            @value2.should == 'off'
+          end
+        end
+      end
+
+    end
+
     describe 'should assign values using []=' do
       before do
         @value = nil
@@ -155,7 +211,6 @@ describe 'Firebase' do
     # def <<(value)
     # def push(value)
     # def value=(value)
-    # def set(value, &and_then)
     # def priority=(value)
     # def priority(value, &and_then)
     # def set(value, priority:priority, &and_then)
@@ -165,9 +220,7 @@ describe 'Firebase' do
     # def on_disconnect(value, &and_then)
     # def on_disconnect(value, priority:priority, &and_then)
     # def inspect
-    # def on(event_type, options={}, &and_then)
     # def once(event_type, options={}, &and_then)
-    # def off(handle=nil)
     # def start_at(priority)
     # def start_at(priority, child:child)
     # def equal_to(priority)
