@@ -53,13 +53,11 @@ describe 'Firebase' do
       @firebase.setValue('specs')
       wait 0.1 do
         @firebase.removeValue
+        @firebase.on(:value) do |snapshot|
+          @value = snapshot.value
+        end
         wait 0.1 do
-          @firebase.on(:value) do |snapshot|
-            @value = snapshot.value
-          end
-          wait 0.1 do
-            @value.should == nil
-          end
+          @value.should == nil
         end
       end
     end
