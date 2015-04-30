@@ -10,28 +10,26 @@ describe 'Firebase' do
     firebase.should.be.kind_of Firebase
   end
 
-  describe 'acceptable URLs when setting Firebase.URL' do
+  describe 'setting Firebase.URL' do
     [
       MOTION_FIREBASE_APP,
       "#{MOTION_FIREBASE_APP}.firebaseio.com/",
       "https://#{MOTION_FIREBASE_APP}",
       "https://#{MOTION_FIREBASE_APP}.firebaseio.com/",
     ].each do |shorthand|
-      it "can fix shorthand URL #{shorthand}" do
+      it "GOOD: #{shorthand}" do
         Firebase.url = shorthand
         Firebase.url.should == MOTION_FIREBASE_SPEC
       end
     end
-  end
 
-  describe '**unacceptable** URLs when setting Firebase.URL' do
     [
       "#{MOTION_FIREBASE_APP}/bad",     # 'app/bad'  - firebaseio.com missing
       "http://#{MOTION_FIREBASE_APP}",  # bad schemes
       "http://#{MOTION_FIREBASE_APP}.firebaseio.com",
       "ftp://#{MOTION_FIREBASE_APP}.firebaseio.com",
     ].each do |shorthand|
-      it "should not allow shorthand URL #{shorthand}" do
+      it "BAD: #{shorthand}" do
         -> do
           Firebase.url = shorthand
         end.should.raise
