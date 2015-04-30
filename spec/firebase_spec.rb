@@ -208,8 +208,40 @@ describe 'Firebase' do
 
     end
 
-    # def <<(value)
-    # def push(value)
+    describe "Pushing values onto a node" do
+      before do
+        @firebase_push = @firebase['push']
+        @value = []
+        @firebase_push.on(:child_added) do |snapshot|
+          @value << snapshot.value
+        end
+      end
+
+      after do
+        @firebase_push.off
+        @firebase_push.clear!
+      end
+
+      it 'should support push' do
+        @firebase_push.push 'a'
+        @firebase_push.push 'b'
+        @firebase_push.push 'c'
+        wait(0.1) do
+          @value.should == ['a', 'b', 'c']
+        end
+      end
+
+      it 'should support <<' do
+        @firebase_push << 'a'
+        @firebase_push << 'b'
+        @firebase_push << 'c'
+        wait(0.1) do
+          @value.should == ['a', 'b', 'c']
+        end
+      end
+
+    end
+
     # def value=(value)
     # def priority=(value)
     # def priority(value, &and_then)
