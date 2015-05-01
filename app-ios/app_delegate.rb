@@ -27,24 +27,23 @@ class MyController < UIViewController
   def loadView
     super
 
-    self.nameField = UIButton.rounded
-    self.nameField.frame = [[20, 20], [280, 44]]
+    self.nameField = UIButton.buttonWithType(UIButtonTypeSystem)
+    self.nameField.frame = [[0, 64], [375, 44]]
     self.nameField.autoresizingMask = UIViewAutoresizingFlexibleWidth
-    self.view << self.nameField
+    self.view.addSubview(self.nameField)
 
-    self.tableView = UITableView.plain
-    self.tableView.frame = [[20, 71], [280, 419]]
+    self.tableView = UITableView.alloc.initWithFrame([[0, 108], [375, 440]], UITableViewStylePlain)
     self.tableView.rowHeight = 44
     self.tableView.delegate = self
     self.tableView.dataSource = self
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
-    self.view << self.tableView
+    self.view.addSubview(self.tableView)
 
-    self.textField = UITextField.alloc.initWithFrame([[20, 464], [280, 30]])
+    self.textField = UITextField.alloc.initWithFrame([[0, 548], [375, 44]])
     self.textField.borderStyle = UITextBorderStyleRoundedRect
     self.textField.autoresizingMask = UIViewAutoresizingFlexibleWidth
     self.textField.delegate = self
-    self.view << self.textField
+    self.view.addSubview(self.textField)
   end
 
   def viewDidLoad
@@ -54,7 +53,8 @@ class MyController < UIViewController
     self.chat = []
 
     # Initialize the root of our Firebase namespace.
-    self.firebase = Firebase.new(FirechatNS)
+    Firebase.url = FirechatNS
+    self.firebase = Firebase.new
 
     # Pick a random number between 1-1000 for our username.
     self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
@@ -62,7 +62,7 @@ class MyController < UIViewController
 
     self.firebase.on(:added) do |snapshot|
       # Add the chat message to the array.
-      self.chat << snapshot.value
+      self.chat << snapshot.value.merge({'key' => snapshot.key})
       # Reload the table view so the new message will show up.
       self.tableView.reloadData
     end
@@ -106,18 +106,36 @@ class MyController < UIViewController
     return cell
   end
 
+  def tableView(tableView, editActionsForRowAtIndexPath:indexPath)
+    deleteAction = UITableViewRowAction.rowActionWithStyle(UITableViewRowActionStyleDestructive, title:'Delete', handler:lambda { |action, indexPath|
+      tableView.editing = false
+
+      chat = self.chat[indexPath.row]
+      self.firebase[chat['key']].clear!
+      self.chat.delete_at(indexPath.row)
+
+      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation:UITableViewRowAnimationFade)
+    })
+
+    [deleteAction]
+  end
+
+  def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
+    # required by tableView:editActionsForRowAtIndexPath:
+  end
+
   # Subscribe to keyboard show/hide notifications.
   def viewWillAppear(animated)
     super
-    UIKeyboardWillShowNotification.add_observer(self, 'keyboardWillShow:')
-    UIKeyboardWillHideNotification.add_observer(self, 'keyboardWillHide:')
+    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillShow:', name:UIKeyboardWillShowNotification, object:nil)
+    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillHide:', name:UIKeyboardWillHideNotification, object:nil)
   end
 
   # Unsubscribe from keyboard show/hide notifications.
   def viewWillDisappear(animated)
     super
-    UIKeyboardWillShowNotification.remove_observer(self)
-    UIKeyboardWillHideNotification.remove_observer(self)
+    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillShowNotification, object:nil)
+    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillHideNotification, object:nil)
   end
 
   # Setup keyboard handlers to slide the view containing the table view and
@@ -154,3 +172,4 @@ class MyController < UIViewController
   end
 
 end
+
