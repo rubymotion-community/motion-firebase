@@ -10,6 +10,11 @@ describe 'Firebase' do
     firebase.should.be.kind_of Firebase
   end
 
+  it 'can go online and offline' do
+    -> { Firebase.offline! }.should.not.raise
+    -> { Firebase.online! }.should.not.raise
+  end
+
   describe 'setting Firebase.URL' do
     [
       MOTION_FIREBASE_APP,

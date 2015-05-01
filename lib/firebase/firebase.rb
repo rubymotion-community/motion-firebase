@@ -88,17 +88,19 @@ class Firebase
   end
 
   def self.offline!
-    Firebase.new.offline!
+    Firebase.goOffline
   end
+
   def offline!
-    self.goOffline
+    Firebase.goOffline
   end
 
   def self.online!
-    Firebase.new.online!
+    Firebase.goOnline
   end
+
   def online!
-    self.goOnline
+    Firebase.goOnline
   end
 
   def transaction(options={}, &transaction)
