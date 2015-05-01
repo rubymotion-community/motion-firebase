@@ -35,7 +35,7 @@ class Firebase
 
     # should we support `Firebase.url = 'myapp/path/to/child/'` ?  I'm gonna say
     # NO for now...
-    unless url.include?('.firebaseio.com/')
+    unless url.include?('.firebaseio.com/') || url.include?('.firebaseio-demo.com/')
       after_scheme = url.index('//') + 2
       if url[after_scheme..-1].include?('/')
         raise "Invalid URL #{url.inspect} in #{__method__}: URL does not include 'firebaseio.com'"
