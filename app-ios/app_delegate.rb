@@ -122,54 +122,7 @@ class MyController < UITableViewController
   def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
     # required by tableView:editActionsForRowAtIndexPath:
   end
-
-  # Subscribe to keyboard show/hide notifications.
-  def viewWillAppear(animated)
-    super
-    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillShow:', name:UIKeyboardWillShowNotification, object:nil)
-    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillHide:', name:UIKeyboardWillHideNotification, object:nil)
-  end
-
-  # Unsubscribe from keyboard show/hide notifications.
-  def viewWillDisappear(animated)
-    super
-    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillShowNotification, object:nil)
-    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillHideNotification, object:nil)
-  end
-
-  # Setup keyboard handlers to slide the view containing the table view and
-  # text field upwards when the keyboard shows, and downwards when it hides.
-  def keyboardWillShow(notification)
-    self.moveView(notification.userInfo, up:true)
-  end
-
-  def keyboardWillHide(notification)
-    self.moveView(notification.userInfo, up:false)
-  end
-
-  def moveView(userInfo, up:up)
-    keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey].CGRectValue
-
-    animationCurve = userInfo[UIKeyboardAnimationCurveUserInfoKey]
-    animationDuration = userInfo[UIKeyboardAnimationDurationUserInfoKey]
-
-    # Get the correct keyboard size to we slide the right amount.
-    UIView.animate(duration:animationDuration, options:animationCurve | UIViewAnimationOptionBeginFromCurrentState) do
-      keyboardFrame = self.view.convertRect(keyboardEndFrame, toView:nil)
-      y = keyboardFrame.size.height * (up ? -1 : 1)
-      self.view.frame = CGRectOffset(self.view.frame, 0, y)
-    end
-  end
-
-  # This method will be called when the user touches on the tableView, at
-  # which point we will hide the keyboard (if open). This method is called
-  # because UITouchTableView.m calls nextResponder in its touch handler.
-  def touchesBegan(touches, withEvent:event)
-    if textField.isFirstResponder
-      textField.resignFirstResponder
-    end
-  end
-
 end
+
 
 
