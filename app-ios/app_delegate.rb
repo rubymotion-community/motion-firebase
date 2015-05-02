@@ -15,50 +15,38 @@ class AppDelegate
 end
 
 
-class MyController < UIViewController
+class MyController < UITableViewController
 
   attr_accessor :chat
   attr_accessor :firebase
 
-  attr_accessor :nameField
   attr_accessor :textField
-  attr_accessor :tableView
-
-  def loadView
-    super
-
-    self.nameField = UIButton.buttonWithType(UIButtonTypeSystem)
-    self.nameField.frame = [[0, 64], [375, 44]]
-    self.nameField.autoresizingMask = UIViewAutoresizingFlexibleWidth
-    self.view.addSubview(self.nameField)
-
-    self.tableView = UITableView.alloc.initWithFrame([[0, 108], [375, 440]], UITableViewStylePlain)
-    self.tableView.rowHeight = 44
-    self.tableView.delegate = self
-    self.tableView.dataSource = self
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
-    self.view.addSubview(self.tableView)
-
-    self.textField = UITextField.alloc.initWithFrame([[0, 548], [375, 44]])
-    self.textField.borderStyle = UITextBorderStyleRoundedRect
-    self.textField.autoresizingMask = UIViewAutoresizingFlexibleWidth
-    self.textField.delegate = self
-    self.view.addSubview(self.textField)
-  end
 
   def viewDidLoad
     super
 
+    # Pick a random number between 1-1000 for our username.
+    self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
+
     # Initialize array that will store chat messages.
     self.chat = []
 
+    self.tableView.rowHeight = UITableViewAutomaticDimension
+    self.tableView.estimatedRowHeight = 44.0
+    self.tableView.dataSource = tableView.delegate = self
+
+    self.textField = UITextField.alloc.initWithFrame([[10, 0], [CGRectGetWidth(self.tableView.bounds) - 2*10, 44]])
+    self.textField.placeholder = 'Type a new item, then press enter'
+    self.textField.delegate = self
+    self.tableView.tableHeaderView = self.textField
+
+    setupFirebase
+  end
+
+  def setupFirebase
     # Initialize the root of our Firebase namespace.
     Firebase.url = FirechatNS
     self.firebase = Firebase.new
-
-    # Pick a random number between 1-1000 for our username.
-    self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
-    nameField.setTitle(self.title, forState:UIControlStateNormal)
 
     self.firebase.on(:added) do |snapshot|
       # Add the chat message to the array.
