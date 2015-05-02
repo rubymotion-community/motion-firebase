@@ -54,6 +54,17 @@ class MyController < UITableViewController
       # Reload the table view so the new message will show up.
       self.tableView.reloadData
     end
+
+    self.firebase.on(:changed) do |snapshot|
+      index = self.chat.index {|chat| chat['key'] == snapshot.key}
+      self.chat[index] = snapshot.value.merge({'key' => snapshot.key}) if index
+      self.tableView.reloadData
+    end
+
+    self.firebase.on(:removed) do |snapshot|
+      self.chat.delete_if {|chat| chat['key'] == snapshot.key}
+      self.tableView.reloadData
+    end
   end
 
 
@@ -160,4 +171,5 @@ class MyController < UITableViewController
   end
 
 end
+
 
