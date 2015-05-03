@@ -15,55 +15,54 @@ class AppDelegate
 end
 
 
-class MyController < UIViewController
+class MyController < UITableViewController
 
   attr_accessor :chat
   attr_accessor :firebase
 
-  attr_accessor :nameField
   attr_accessor :textField
-  attr_accessor :tableView
-
-  def loadView
-    super
-
-    self.nameField = UIButton.buttonWithType(UIButtonTypeSystem)
-    self.nameField.frame = [[0, 64], [375, 44]]
-    self.nameField.autoresizingMask = UIViewAutoresizingFlexibleWidth
-    self.view.addSubview(self.nameField)
-
-    self.tableView = UITableView.alloc.initWithFrame([[0, 108], [375, 440]], UITableViewStylePlain)
-    self.tableView.rowHeight = 44
-    self.tableView.delegate = self
-    self.tableView.dataSource = self
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
-    self.view.addSubview(self.tableView)
-
-    self.textField = UITextField.alloc.initWithFrame([[0, 548], [375, 44]])
-    self.textField.borderStyle = UITextBorderStyleRoundedRect
-    self.textField.autoresizingMask = UIViewAutoresizingFlexibleWidth
-    self.textField.delegate = self
-    self.view.addSubview(self.textField)
-  end
 
   def viewDidLoad
     super
 
+    # Pick a random number between 1-1000 for our username.
+    self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
+
     # Initialize array that will store chat messages.
     self.chat = []
 
+    self.tableView.rowHeight = UITableViewAutomaticDimension
+    self.tableView.estimatedRowHeight = 44.0
+    self.tableView.dataSource = tableView.delegate = self
+
+    self.textField = UITextField.alloc.initWithFrame([[10, 0], [CGRectGetWidth(self.tableView.bounds) - 2*10, 44]])
+    self.textField.placeholder = 'Type a new item, then press enter'
+    self.textField.delegate = self
+    self.tableView.tableHeaderView = self.textField
+
+    setupFirebase
+  end
+
+  def setupFirebase
     # Initialize the root of our Firebase namespace.
     Firebase.url = FirechatNS
     self.firebase = Firebase.new
-
-    # Pick a random number between 1-1000 for our username.
-    self.title = "Guest0x#{(rand * 1000).round.to_s(16).upcase}"
-    nameField.setTitle(self.title, forState:UIControlStateNormal)
 
     self.firebase.on(:added) do |snapshot|
       # Add the chat message to the array.
       self.chat << snapshot.value.merge({'key' => snapshot.key})
       # Reload the table view so the new message will show up.
+      self.tableView.reloadData
+    end
+
+    self.firebase.on(:changed) do |snapshot|
+      index = self.chat.index {|chat| chat['key'] == snapshot.key}
+      self.chat[index] = snapshot.value.merge({'key' => snapshot.key}) if index
+      self.tableView.reloadData
+    end
+
+    self.firebase.on(:removed) do |snapshot|
+      self.chat.delete_if {|chat| chat['key'] == snapshot.key}
       self.tableView.reloadData
     end
   end
@@ -123,53 +122,7 @@ class MyController < UIViewController
   def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
     # required by tableView:editActionsForRowAtIndexPath:
   end
-
-  # Subscribe to keyboard show/hide notifications.
-  def viewWillAppear(animated)
-    super
-    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillShow:', name:UIKeyboardWillShowNotification, object:nil)
-    NSNotificationCenter.defaultCenter.addObserver(self, selector:'keyboardWillHide:', name:UIKeyboardWillHideNotification, object:nil)
-  end
-
-  # Unsubscribe from keyboard show/hide notifications.
-  def viewWillDisappear(animated)
-    super
-    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillShowNotification, object:nil)
-    NSNotificationCenter.defaultCenter.removeObserver(self, name:UIKeyboardWillHideNotification, object:nil)
-  end
-
-  # Setup keyboard handlers to slide the view containing the table view and
-  # text field upwards when the keyboard shows, and downwards when it hides.
-  def keyboardWillShow(notification)
-    self.moveView(notification.userInfo, up:true)
-  end
-
-  def keyboardWillHide(notification)
-    self.moveView(notification.userInfo, up:false)
-  end
-
-  def moveView(userInfo, up:up)
-    keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey].CGRectValue
-
-    animationCurve = userInfo[UIKeyboardAnimationCurveUserInfoKey]
-    animationDuration = userInfo[UIKeyboardAnimationDurationUserInfoKey]
-
-    # Get the correct keyboard size to we slide the right amount.
-    UIView.animate(duration:animationDuration, options:animationCurve | UIViewAnimationOptionBeginFromCurrentState) do
-      keyboardFrame = self.view.convertRect(keyboardEndFrame, toView:nil)
-      y = keyboardFrame.size.height * (up ? -1 : 1)
-      self.view.frame = CGRectOffset(self.view.frame, 0, y)
-    end
-  end
-
-  # This method will be called when the user touches on the tableView, at
-  # which point we will hide the keyboard (if open). This method is called
-  # because UITouchTableView.m calls nextResponder in its touch handler.
-  def touchesBegan(touches, withEvent:event)
-    if textField.isFirstResponder
-      textField.resignFirstResponder
-    end
-  end
-
 end
+
+
 
