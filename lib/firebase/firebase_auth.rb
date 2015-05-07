@@ -74,7 +74,11 @@ class Firebase
     email = credentials[:email]
     password = credentials[:password]
     begin
-      createUserWithEmail(email, password: password, withCompletionBlock: block)
+      if block && block.arity == 2
+        createUser(email, password: password, withValueCompletionBlock: block)
+      else
+        createUser(email, password: password, withCompletionBlock: block)
+      end
     rescue RuntimeError => e
       block.call(e, nil)
     end
@@ -89,7 +93,7 @@ class Firebase
     email = credentials[:email]
     password = credentials[:password]
     begin
-      createUserWithEmail(email, password: password, withCompletionBlock: -> (error) do
+      createUser(email, password: password, withCompletionBlock: -> (error) do
         if error
           block.call(error, nil)
         else
