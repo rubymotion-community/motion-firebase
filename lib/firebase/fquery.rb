@@ -134,7 +134,7 @@ class FQuery
     if block
       event_type = options.fetch(:on, FEventTypeValue)
       event_type = Firebase.convert_event_type(event_type)
-      return fb_query.observeEventType(event_type, withBlock: and_then)
+      return fb_query.observeEventType(event_type, withBlock: block)
     else
       fb_query
     end
