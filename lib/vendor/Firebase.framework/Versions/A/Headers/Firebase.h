@@ -29,12 +29,14 @@
 
 #import <Foundation/Foundation.h>
 #import "FQuery.h"
+#import "FirebaseApp.h"
 #import "FDataSnapshot.h"
 #import "FMutableData.h"
 #import "FTransactionResult.h"
 #import "FAuthData.h"
 #import "FAuthType.h"
 #import "FirebaseServerValue.h"
+#import "FConfig.h"
 
 /**
  * A Firebase reference represents a particular location in your Firebase
@@ -352,6 +354,15 @@ Supported events types for all realtime observers are specified in FEventType as
  * @param handle The handle returned by the call to observeEventType:withBlock: which we are trying to remove.
  */
 - (void) removeObserverWithHandle:(FirebaseHandle)handle;
+
+/**
+ * By calling `keepSynced:YES` on a location, the data for that location will automatically be downloaded and
+ * kept in sync, even when no listeners are attached for that location. Additionally, while a location is kept
+ * synced, it will not be evicted from the persistent disk cache.
+ *
+ * @param keepSynced Pass YES to keep this location synchronized, pass NO to stop synchronization.
+ */
+- (void) keepSynced:(BOOL)keepSynced;
 
 
 /**
@@ -1013,19 +1024,41 @@ Supported events types for all realtime observers are specified in FEventType as
  */
 @property (strong, readonly, nonatomic) NSString* key;
 
+/**
+ * Gets the FirebaseApp instance associated with this reference.
+ *
+ * @return The FirebaseApp object for this reference.
+ */
+@property (strong, readonly, nonatomic) FirebaseApp *app;
+
 
 /** @name Global configuration and settings */
 
 /** Set the default dispatch queue for event blocks.
-*
-* @param queue The queue to set as the default for running blocks for all Firebase event types.
+ *
+ * @param queue The queue to set as the default for running blocks for all Firebase event types.
+ * @deprecated This method is deprecated
+ * @note Please use [Firebase defaultConfig].callbackQueue instead
 */
-+ (void) setDispatchQueue:(dispatch_queue_t)queue;
++ (void) setDispatchQueue:(dispatch_queue_t)queue __attribute__((deprecated));
 
 /** Retrieve the Firebase SDK version. */
 + (NSString *) sdkVersion;
 
 + (void) setLoggingEnabled:(BOOL)enabled;
 
-+ (void) setOption:(NSString*)option to:(id)value;
+/**
+ * Returns the default config object, used for configuring Firebase client behavior.
+ *
+ * This can be modified until you create your first `Firebase` instance.
+ */
++ (FConfig *)defaultConfig;
+
+/**
+ * @deprecated This method is deprecated
+ * @note Please enable persistence by setting [Firebase defaultConfig].persistenceEnabled = YES instead.
+ * @param option Option to set.
+ * @param value Value to set.
+ */
++ (void) setOption:(NSString*)option to:(id)value __attribute__((deprecated));
 @end
