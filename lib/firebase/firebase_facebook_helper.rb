@@ -6,6 +6,7 @@ class Firebase
   end
 
   def open_facebook_session(options={}, &block)
+    ref = self
     fb_login = FBSDKLoginManager.alloc.init
     fb_login.logInWithReadPermissions(["email"], 
       handler: -> (facebookResult, facebookError) do
