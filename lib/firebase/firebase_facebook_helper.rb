@@ -13,7 +13,7 @@ class Firebase
           block.call(facebookError, nil)
         elsif facebookResult.isCancelled
           block.call("Facebook login got cancelled.", nil)
-        elsif state == FBSessionStateOpen
+        else
           access_token = FBSDKAccessToken.currentAccessToken.tokenString
 
           ref.authWithOAuthProvider('facebook', token: access_token, withCompletionBlock:block)
