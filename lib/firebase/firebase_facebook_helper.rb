@@ -7,8 +7,9 @@ class Firebase
 
   def open_facebook_session(options={}, &block)
     ref = self
+    permissions = options[:permissions] || ['email']
     fb_login = FBSDKLoginManager.alloc.init
-    fb_login.logInWithReadPermissions(["email"], 
+    fb_login.logInWithReadPermissions(permissions, 
       handler: -> (facebookResult, facebookError) do
         if facebookError
           block.call(facebookError, nil)
