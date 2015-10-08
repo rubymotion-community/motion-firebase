@@ -7,16 +7,18 @@ class Firebase
 
   def open_facebook_session(options={}, &block)
     ref = self
-    permissions = options[:permissions] || ['public_profile']
-    allow_ui = options.fetch(:allow_login_ui, true)
-    FBSession.openActiveSessionWithReadPermissions(permissions, allowLoginUI: allow_ui,
-      completionHandler: -> (session, state, error) do
-        if error
-          block.call(error, nil)
-        elsif state == FBSessionStateOpen
-          token = session.accessTokenData.accessToken
+    permissions = options[:permissions] || ['email']
+    fb_login = FBSDKLoginManager.alloc.init
+    fb_login.logInWithReadPermissions(permissions, 
+      handler: -> (facebookResult, facebookError) do
+        if facebookError
+          block.call(facebookError, nil)
+        elsif facebookResult.isCancelled
+          block.call("Facebook login got cancelled.", nil)
+        else
+          access_token = FBSDKAccessToken.currentAccessToken.tokenString
 
-          ref.authWithOAuthProvider('facebook', token:token, withCompletionBlock:block)
+          ref.authWithOAuthProvider('facebook', token: access_token, withCompletionBlock:block)
         end
       end)
     nil
