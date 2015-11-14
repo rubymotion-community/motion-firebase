@@ -118,6 +118,19 @@ class Firebase
     changePasswordForUser(email, fromOld: old_password, toNew: new_password, withCompletionBlock: block)
   end
 
+  def self.update_user_email(credentials, &block)
+    Firebase.new.update_user_email(credentials, &block)
+  end
+  def update_user_email(credentials, &block)
+    raise ":email is required in #{__method__}" unless credentials.key?(:email)
+    raise ":password is required in #{__method__}" unless credentials.key?(:password)
+    raise ":new_email is required in #{__method__}" unless credentials.key?(:new_email)
+    email = credentials[:email]
+    password = credentials[:password]
+    new_email = credentials[:new_email]
+    changeEmailForUser(email, password: password, toNewEmail: new_email, withCompletionBlock: block)
+  end
+
   def self.send_password_reset(credentials, &block)
     Firebase.new.send_password_reset(credentials, &block)
   end
