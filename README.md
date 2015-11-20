@@ -351,6 +351,7 @@ Firebase.remove_user(email: 'hello@example.com', password: '12345') { |error, au
 Firebase.login(email: 'hello@example.com', password: '12345') { |error, auth_data| }
 Firebase.login_anonymously { |error, auth_data| }
 Firebase.update_user(email: 'hello@example.com', old_password: '12345', new_password: '54321') { |error, success| }
+Firebase.update_user_email(email: 'hello@example.com', password: '12345', new_email: 'hellp2@example.com') { |error, success| }
 
 auth_data.uid # is a globally unique user identifier
 auth_data.token # can be stored (in a keychain!) to authenticate the same user again later
