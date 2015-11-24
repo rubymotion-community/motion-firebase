@@ -180,6 +180,10 @@ firebase.query(first: value)
 firebase.query(first: value, on: :added) do |snapshot|
 end
 
+# create a listener that only is executed once by providing a block and :once value
+firebase.query(first: value, once: :value) do |snapshot|
+end
+
 firebase.query(last: value)
 # => firebase.queryLimitedToLast(value)
 
