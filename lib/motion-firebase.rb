@@ -4,6 +4,13 @@ end
 
 
 Motion::Project::App.setup do |app|
+
+  # Pods dependencies
+  app.pods do
+    pod 'Firebase/Database', '= 3.4'
+    pod 'Firebase/Auth', '= 3.4'
+  end
+
   # scans app.files until it finds app/ (the default)
   # if found, it inserts just before those files, otherwise it will insert to
   # the end of the list
@@ -17,5 +24,5 @@ Motion::Project::App.setup do |app|
   app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
   # for twitter or facebook
   app.weak_frameworks += ['Accounts', 'Social']
-  app.vendor_project(File.join(File.dirname(__FILE__), 'vendor/Firebase.framework'), :static, headers_dir: 'Headers', products: ['Firebase'], force_load: false)
+  
 end

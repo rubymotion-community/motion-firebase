@@ -1,4 +1,4 @@
-class FQuery
+class FIRDatabaseQuery
 
   # previously the 'key' method was called 'name'
   def name
@@ -62,32 +62,34 @@ class FQuery
     return self
   end
 
-  def start_at(priority)
-    queryStartingAtPriority(priority)
-  end
+  # def start_at(priority)
+  #   queryStartingAtPriority(priority)
+  # end
 
-  def start_at(priority, child: child)
-    queryStartingAtPriority(priority, andChildName: child)
-  end
+  # def start_at(priority, child: child)
+  #   queryStartingAtPriority(priority, andChildName: child)
+  # end
 
-  def equal_to(priority)
-    queryEqualToPriority(priority)
-  end
+  # def equal_to(priority)
+  #   queryEqualToPriority(priority)
+  # end
 
-  def equal_to(priority, child: child)
-    queryEqualToPriority(priority, andChildName: child)
-  end
+  # def equal_to(priority, child: child)
+  #   queryEqualToPriority(priority, andChildName: child)
+  # end
 
-  def end_at(priority)
-    queryEndingAtPriority(priority)
-  end
+  # def end_at(priority)
+  #   queryEndingAtPriority(priority)
+  # end
 
-  def end_at(priority, child: child)
-    queryEndingAtPriority(priority, andChildName: child)
-  end
+  # def end_at(priority, child: child)
+  #   queryEndingAtPriority(priority, andChildName: child)
+  # end
 
-  def limit(limit)
-    queryLimitedToNumberOfChildren(limit)
+  def limit(options={})
+    limit = options[:limit]
+    raise "Need to provide a limit" unless limit
+    queryLimitedToLast(limit)
   end
 
   def query(options={}, &block)
@@ -132,7 +134,7 @@ class FQuery
     end
 
     if block
-      event_type = options.fetch(:once, options.fetch(:on, FEventTypeValue))
+      event_type = options.fetch(:once, options.fetch(:on, FIRDataEventTypeValue))
       event_type = Firebase.convert_event_type(event_type)
 
       if options.key?(:once)
