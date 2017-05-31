@@ -1,4 +1,4 @@
-class FDataSnapshot
+class FIRDataSnapshot
 
   def inspect
     "#<#{self.class}:0x#{self.object_id.to_s(16)} value=#{self.value.inspect} ref=#{self.ref.inspect}>"
