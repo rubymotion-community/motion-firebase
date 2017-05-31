@@ -16,6 +16,10 @@ class FIRAuth
     signInWithCustomToken(token, completion: and_then)
     return self
   end
+  
+  def login(email, password)
+    puts "Test"
+  end
 
 
 end
